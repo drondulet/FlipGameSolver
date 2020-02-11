@@ -1,0 +1,13 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "HashLink DBG",
+			"request": "launch",
+			"type": "hl",
+			"hxml": "build.hxml",
+			"cwd": "${workspaceFolder}",
+			"preLaunchTask": "HL build"
+		}
+	]
+}
