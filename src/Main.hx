@@ -1,13 +1,18 @@
+import game.Board;
+import game.Solver;
 import model.Matrix;
+import haxe.ds.BalancedTree;
+import haxe.ds.HashMap;
+
 
 class Main {
 	
 	static function main() {
 		
-		var mat: Matrix = new Matrix(3, 3);
-		// mat.fill(15);
-		// mat.setSell(1, 1, 1);
+		var board: Board = new Board(3, 3);
 		
-		trace(mat);
+		Solver.buildTree(board);
+		
+		trace(board);
 	}
 }
