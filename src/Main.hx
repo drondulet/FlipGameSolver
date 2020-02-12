@@ -9,7 +9,7 @@ class Main {
 	
 	static function main() {
 		
-		var board: Board = new Board(3, 3);
+		var board: Board = new Board(3, 3, 0);
 		
 		Solver.buildTree(board);
 		

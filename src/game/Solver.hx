@@ -14,8 +14,8 @@ class Solver {
 	static public function buildTree(board: Board): Void {
 		
 		var map: Map<String, Turn> = [];
-		var xSize: Int = board.board.xSize;
-		var ySize: Int = board.board.ySize;
+		var xSize: Int = board.cells.xSize;
+		var ySize: Int = board.cells.ySize;
 		
 		var rootTurn: Turn = {root: null, x: -1, y: -1, mat: new Matrix(xSize, ySize, 0)}
 		map.set(rootTurn.mat.getHash(), rootTurn);
@@ -24,7 +24,7 @@ class Solver {
 			for (j in 0 ... ySize) {
 				
 				board.turnCell(i, j);
-				var turn: Turn = {root: rootTurn, x: i, y: j, mat: board.board};
+				var turn: Turn = {root: rootTurn, x: i, y: j, mat: board.cells};
 				map.set(turn.mat.getHash(), turn);
 				board.turnCell(i, j);
 			}

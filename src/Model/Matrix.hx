@@ -1,13 +1,13 @@
 package model;
 
 import haxe.ds.Vector;
-import utils.Assert;
+// import utils.Assert;
 
 class Matrix<T> {
 	
 	public var xSize(default, null): Int;
 	public var ySize(default, null): Int;
-	private var mat: Vector<Vector<T>>;
+	public var mat(default, null): Vector<Vector<T>>;
 	
 	public function new(x: Int, y: Int, defaultValue:Null<T> = null) {
 		
@@ -65,7 +65,7 @@ class Matrix<T> {
 		
 		for (i in 0 ... xSize) {
 			for (j in 0 ... ySize) {
-				result += getSell(i, j);
+				result += '${getSell(i, j)}';
 			}
 		}
 		
