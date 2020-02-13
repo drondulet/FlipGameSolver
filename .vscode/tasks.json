@@ -1,19 +1,5 @@
 {
 	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "HL build",
-			"type": "haxe",
-			"args": "active configuration",
-			"problemMatcher": [
-				"$haxe-absolute",
-				"$haxe",
-				"$haxe-error",
-				"$haxe-trace"
-			],
-			"group": "build"
-		}
-	],
 	"presentation": {
 		"echo": true,
 		"reveal": "always",
@@ -21,5 +7,22 @@
 		"panel": "shared",
 		"showReuseMessage": true,
 		"clear": true
-	}
+	},
+	"tasks": [
+		{
+			"label": "HL debug",
+			"type": "shell",
+			"command": "lime build hl -debug",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
 }
