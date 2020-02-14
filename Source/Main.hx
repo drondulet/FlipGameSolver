@@ -1,23 +1,25 @@
 package;
 
-import game.Board;
-import game.Solver;
+import openfl.events.Event;
 import openfl.display.Sprite;
+import scene.Scene;
 
 class Main extends Sprite {
+	
+	private var scene: Scene;
 	
 	public function new() {
 		
 		super();
-		init();
+		
+		scene = new Scene();
+		addChild(scene);
+		scene.init();
+		
+		stage.addEventListener(Event.RESIZE, onResize);
 	}
 	
-	private function init(): Void {
-		
-		var board: Board = new Board(3, 3, 0);
-		
-		Solver.solve(board);
-		
-		trace(board);
+	private function onResize(event: Event): Void {
+		scene.onStageResize();
 	}
 }
