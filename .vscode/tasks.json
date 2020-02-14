@@ -12,7 +12,7 @@
 		{
 			"label": "HL debug",
 			"type": "shell",
-			"command": "lime build hl -debug",
+			"command": "openfl build hl -debug",
 			"problemMatcher": [
 				"$haxe-absolute",
 				"$haxe",

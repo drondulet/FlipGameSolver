@@ -28,7 +28,7 @@ class Tile extends Sprite {
 		graphics.drawRoundRect(0, 0, size, size, size * 0.5, size * 0.5);
 		graphics.endFill();
 		
-		var bmpData: BitmapData = new BitmapData(this.size, this.size, true);
+		var bmpData: BitmapData = new BitmapData(this.size, this.size);
 		graphics.beginBitmapFill(bmpData);
 		graphics.endFill();
 		
