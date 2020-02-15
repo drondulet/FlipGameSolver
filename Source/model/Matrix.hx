@@ -41,6 +41,10 @@ class Matrix<T> {
 		}
 	}
 	
+	public function iterator(): Iterator<T> {
+		return new MatrixIterator(this);
+	}
+	
 	inline public function isInside(x: Int, y: Int): Bool {
 		return x < xSize && y < ySize && x >= 0 && y >= 0;
 	}
@@ -73,24 +77,38 @@ class Matrix<T> {
 	}
 }
 
-// class MatrixIterator<T> {
+class MatrixIterator<T> {
 	
-// 	final mat: Matrix<T>;
-// 	private var x: Int;
-// 	private var y: Int;
+	final mat: Matrix<T>;
+	private var x: Int;
+	private var y: Int;
 	
-// 	public function new(mat: Matrix<T>): Void {
+	public function new(mat: Matrix<T>): Void {
 		
-// 		this.mat = mat;
-// 		x = 0;
-// 		y = 0;
-// 	}
+		this.mat = mat;
+		x = -1;
+		y = 0;
+	}
 	
-// 	public function hasNext(): Bool {
-// 		return mat.isInside(x, y);
-// 	}
+	public function hasNext(): Bool {
+		
+		inc();
+		return mat.isInside(x, y);
+	}
 	
-// 	public function next(): T {
-// 		return mat.getSell(x++, y++);
-// 	}
-// }
+	public function next(): T {
+		return mat.getCell(x, y);
+	}
+	
+	private function inc(): Void {
+		
+		if(x < mat.xSize - 1) {
+			x++;
+		}
+		else {
+			
+			x = 0;
+			y++;
+		}
+	}
+}

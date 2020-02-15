@@ -23,8 +23,6 @@ class Tile extends Sprite {
 		this.addBmp({x: this.size, y: this.size});
 		
 		setState(isTurned);
-		
-		cacheAsBitmap = true;
 	}
 	
 	public function setState(isTurned: Bool): Void {

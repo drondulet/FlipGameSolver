@@ -28,7 +28,7 @@ class Session {
 	public function new(settings: SessionSettings) {
 		
 		board = new Board(settings.x, settings.y, 0);
-		state = NoState;
+		state = EState.NoState;
 	}
 	
 	public function get_cols(): Int {
@@ -43,8 +43,8 @@ class Session {
 		return board.cells.mat[x][y] == 0 ? true : false;
 	}
 	
-	public function setEditMode(): Void {
-		setState(Edit);
+	public function switchEditMode(): Void {
+		state.match(EState.Edit) ? setState(EState.Play) : setState(EState.Edit);
 	}
 	
 	public function setPlayMode(): Void {
@@ -52,7 +52,11 @@ class Session {
 	}
 	
 	public function isWin(): Bool {
-		return state.match(Win);
+		return state.match(EState.Win);
+	}
+	
+	public function isEditMode(): Bool {
+		return state.match(EState.Edit);
 	}
 	
 	public function tilePressed(x: Int, y: Int): Void {
@@ -63,6 +67,21 @@ class Session {
 		
 		if (board.isWin() && !isEdit) {
 			setState(EState.Win);
+		}
+		
+		boardChanged(changedCells);
+	}
+	
+	public function fillRandom(): Void {
+		
+		var changedCells: Array<IntPoint> = [];
+		
+		for (i in 0 ... cols) {
+			for (j in 0 ... rows) {
+				
+				changedCells.push({x: i, y: j});
+				board.cells.setCell(Std.random(2), i, j);
+			}
 		}
 		
 		boardChanged(changedCells);

@@ -3,6 +3,7 @@ package scene;
 import Settings;
 import model.Point;
 import openfl.display.Sprite;
+import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
@@ -14,10 +15,13 @@ class Panel extends Sprite {
 	
 	static private final colsName: String = 'Columns';
 	static private final rowsName: String = 'Rows';
+	static private final textBtnName: String = 'Rows';
 	
 	public var rowsInput(get, null): Int;
 	public var colsInput(get, null): Int;
 	public var applyButtonCb: Void->Void;
+	public var editButtonCb: Void->Void;
+	public var randomButtonCb: Void->Void;
 	
 	private final textFormat: TextFormat = new TextFormat("Lucida", 18, 0x80FF80);
 	private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, 0x80FF80, true);
@@ -25,9 +29,6 @@ class Panel extends Sprite {
 	public function new() {
 		
 		super();
-		
-		cacheAsBitmap = true;
-		
 		init();
 	}
 	
@@ -48,9 +49,17 @@ class Panel extends Sprite {
 		addChild(createStaticText(indentText, 50, rowsName));
 		addChild(createStaticText(indentText, 80, colsName));
 		
-		var applyButton: Sprite = createButton({x: 10, y: 120}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.applyButtonText);
+		var applyButton: Sprite = createButton({x: 10, y: 120}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.resetBtnText);
 		applyButton.addEventListener(MouseEvent.CLICK, (e) -> applyButtonCb());
 		addChild(applyButton);
+		
+		var editButton: Sprite = createButton({x: 10, y: 160}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.editBtnText);
+		editButton.addEventListener(MouseEvent.CLICK, editBtnClicked);
+		addChild(editButton);
+		
+		var randomButton: Sprite = createButton({x: 10, y: 200}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.randomBtnText);
+		randomButton.addEventListener(MouseEvent.CLICK, (e) -> randomButtonCb());
+		addChild(randomButton);
 	}
 	
 	public function onStageResize(): Void {
@@ -71,11 +80,32 @@ class Panel extends Sprite {
 	
 	private function validateInput(textField: TextField): Int {
 		
-		var number: Int = Std.parseInt(textField.text);
-		number = number >= Settings.minTilesCount && number <= Settings.maxTilesCount ? number : Settings.rows;
+		var number: Null<Int> = Std.parseInt(textField.text);
+		number = number != null && number >= Settings.minTilesCount && number <= Settings.maxTilesCount ? number : Settings.rows;
 		textField.text = '${number}';
 		
 		return number;
+	}
+	
+	private function editBtnClicked(e: Event): Void {
+		
+		var text:TextField;
+		
+		if (Std.is(e.target, Sprite)) {
+			
+			var btn: Sprite = cast(e.target, Sprite);
+			text = cast(btn.getChildByName(textBtnName), TextField);
+		}
+		else if (Std.is(e.target, TextField)) {
+			text = cast(e.target, TextField);
+		}
+		else {
+			throw 'click on button with something not sprite or text';
+		}
+		
+		text.text = text.text == Settings.editBtnText ? Settings.editDoneBtnText : Settings.editBtnText;
+		
+		editButtonCb();
 	}
 	
 	private function createInputText(x: Int, y: Int, name: String): TextField {
@@ -101,9 +131,8 @@ class Panel extends Sprite {
 		input.y = y;
 		input.text = text;
 		input.height = input.textHeight + 2;
-		input.width = 80;
-		input.cacheAsBitmap = true;
-		input.border = true;
+		input.width = 100;
+		// input.border = true;
 		
 		return input;
 	}
@@ -119,7 +148,8 @@ class Panel extends Sprite {
 		button.fillColor(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
 		button.addBmp(size);
 		
-		var text: TextField = createStaticText(Std.int(size.x * 0.3), Std.int(size.y * 0.15), text);
+		var text: TextField = createStaticText(Std.int(size.x * 0.25), Std.int(size.y * 0.15), text);
+		text.name = textBtnName;
 		button.addChild(text);
 		
 		return button;

@@ -50,6 +50,8 @@ class Scene extends Sprite {
 		
 		panel = new Panel();
 		panel.applyButtonCb = applyButtonClicked;
+		panel.editButtonCb = editButtonClicked;
+		panel.randomButtonCb = randomButtonClicked;
 		addChild(panel);
 	}
 	
@@ -120,7 +122,7 @@ class Scene extends Sprite {
 	private function onWin(): Void {
 		
 		trace('Win!');
-		session.setEditMode();
+		session.setPlayMode();
 	}
 	
 	private function removeAllTiles(): Void {
@@ -142,6 +144,24 @@ class Scene extends Sprite {
 	}
 	
 	private function applyButtonClicked(): Void {
+		
+		if (session.isEditMode()) {
+			return;
+		}
+		
 		startNewSession({x: panel.rowsInput, y: panel.colsInput});
+	}
+	
+	private function editButtonClicked(): Void {
+		session.switchEditMode();
+	}
+	
+	private function randomButtonClicked(): Void {
+		
+		if (session.isEditMode()) {
+			return;
+		}
+		
+		session.fillRandom();
 	}
 }
