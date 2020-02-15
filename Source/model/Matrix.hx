@@ -22,12 +22,12 @@ class Matrix<T> {
 		fill(defaultValue);
 	}
 	
-	inline public function getSell(x: Int, y: Int): T {
+	inline public function getCell(x: Int, y: Int): T {
 		// Assert.assert(isInside(x, y));
 		return mat[x][y];
 	}
 	
-	inline public function setSell(value: T, x: Int, y: Int): Void {
+	inline public function setCell(value: T, x: Int, y: Int): Void {
 		// Assert.assert(isInside(x, y));
 		mat[x][y] = value;
 	}
@@ -36,7 +36,7 @@ class Matrix<T> {
 		
 		for (i in 0 ... xSize) {
 			for (j in 0 ... ySize) {
-				setSell(value, i, j);
+				setCell(value, i, j);
 			}
 		}
 	}
@@ -51,7 +51,7 @@ class Matrix<T> {
 		
 		for (i in 0 ... xSize) {
 			for (j in 0 ... ySize) {
-				result += '${getSell(i, j)} ';
+				result += '${getCell(i, j)} ';
 			}
 			result += "\n";
 		}
@@ -65,7 +65,7 @@ class Matrix<T> {
 		
 		for (i in 0 ... xSize) {
 			for (j in 0 ... ySize) {
-				result += '${getSell(i, j)}';
+				result += '${getCell(i, j)}';
 			}
 		}
 		

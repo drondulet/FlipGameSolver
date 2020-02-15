@@ -2,30 +2,29 @@ package scene;
 
 import Settings;
 import game.Session;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
+import model.Matrix;
+import model.Point;
 import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
+
+using scene.SceneHelper;
 
 class Scene extends Sprite {
 	
 	private var session: Null<Session>;
 	private var tileBoard: Null<Sprite>;
 	private var panel: Null<Panel>;
+	private var tiles: Matrix<Tile>;
 	
 	public function new() {
-		
 		super();
 	}
 	
 	public function init(): Void {
 		
-		cacheAsBitmap = true;
-		
 		startNewSession({x: Settings.cols, y: Settings.rows});
-		
 		initControlPanel();
 	}
 	
@@ -47,13 +46,11 @@ class Scene extends Sprite {
 		addTiles();
 	}
 	
-	private function handleBoardClick(event: Event): Void {
+	private function initControlPanel(): Void {
 		
-		if (Std.is(event.target, Tile)) {
-			
-			var tile: Tile = cast(event.target, Tile);
-			session.tilePressed(tile.index.x, tile.index.y);
-		}
+		panel = new Panel();
+		panel.applyButtonCb = applyButtonClicked;
+		addChild(panel);
 	}
 	
 	private function initTileBoard(): Void {
@@ -64,69 +61,56 @@ class Scene extends Sprite {
 		
 		tileBoard = new Sprite();
 		tileBoard.x = 200;
-		tileBoard.y = 200;
+		tileBoard.y = 50;
 		
 		tileBoard.addEventListener(MouseEvent.CLICK, handleBoardClick);
 		
 		addChild(tileBoard);
 	}
 	
-	private function resizeTileBoard(x: Int, y: Int): Void {
+	private function handleBoardClick(event: Event): Void {
 		
-		var bmpData: BitmapData = new BitmapData(x, y);
-		graphics.beginBitmapFill(bmpData);
-		graphics.endFill();
-		
-		var child: Null<DisplayObject> = tileBoard.getChildByName('tileboardBmp');
-		
-		if (child != null) {
-			tileBoard.removeChild(child);
+		if (Std.is(event.target, Tile)) {
+			
+			var tile: Tile = cast(event.target, Tile);
+			session.tilePressed(tile.index.x, tile.index.y);
 		}
-		
-		var bmp: Bitmap = new Bitmap(bmpData);
-		bmp.visible = false;
-		bmp.name = 'tileboardBmp';
-		tileBoard.addChild(bmp);
-		
-		fillColorTileboard();
 	}
 	
-	private function fillColorTileboard(): Void {
-		
-		tileBoard.graphics.beginFill(0x202020);
-		tileBoard.graphics.drawRoundRect(0, 0, tileBoard.width, tileBoard.height, tileBoard.width * 0.1, tileBoard.height * 0.1);
-		tileBoard.graphics.endFill();
+	private function resizeTileBoard(x: Int, y: Int): Void {
+		tileBoard.fillColor(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
 	}
 	
 	private function addTiles(): Void {
 		
 		var tile: Tile;
 		
+		tiles = new Matrix(session.cols, session.rows);
+		
 		for (i in 0 ... session.cols) {
 			for (j in 0 ... session.rows) {
+				
 				
 				tile = new Tile(Settings.tileSize, {x: i, y: j}, session.isTileTurned(i, j));
 				tile.x = i * tile.width + i * Settings.tilesGap + Settings.tilesGap;
 				tile.y = j * tile.height + j * Settings.tilesGap + Settings.tilesGap;
+				tiles.setCell(tile, i, j);
 				tileBoard.addChild(tile);
 			}
 		}
 		
-		var xSize: Int = 2 * Std.int(Settings.tilesGap) + session.cols * Settings.tileSize;
-		var ySize: Int = 2 * Std.int(Settings.tilesGap) + session.rows * Settings.tileSize;
+		var xSize: Int = Std.int(session.cols * (Settings.tileSize + Settings.tilesGap) + Settings.tilesGap);
+		var ySize: Int = Std.int(session.rows * (Settings.tileSize + Settings.tilesGap) + Settings.tilesGap);
 		resizeTileBoard(xSize, ySize);
 	}
 	
 	private function fillBgColor(): Void {
-		
-		graphics.beginFill(Settings.bgColor);
-		graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
-		graphics.endFill();
+		this.fillColor(Settings.bgColor, {x: 0 , y: 0, width: stage.stageWidth, height: stage.stageHeight});
 	}
 	
-	private function onBoardChanged(): Void {
+	private function onBoardChanged(cells: Array<IntPoint>): Void {
 		
-		updateSellsStates();
+		updateSellsStates(cells);
 		
 		if (session.isWin()) {
 			onWin();
@@ -136,7 +120,7 @@ class Scene extends Sprite {
 	private function onWin(): Void {
 		
 		trace('Win!');
-		session.setPlayMode();
+		session.setEditMode();
 	}
 	
 	private function removeAllTiles(): Void {
@@ -146,40 +130,18 @@ class Scene extends Sprite {
 		while (i < tileBoard.numChildren) {
 			
 			var child: DisplayObject = tileBoard.getChildAt(i);
-			
-			if (Std.is(child, Tile)) {
-				tileBoard.removeChild(child);
-			}
-			else {
-				i++;
-			}
+			Std.is(child, Tile) ? tileBoard.removeChild(child) : i++;
 		}
 	}
 	
-	private function updateSellsStates(): Void {
+	private function updateSellsStates(cells: Array<IntPoint>): Void {
 		
-		var tile: Tile;
-		
-		for (i in 0 ... tileBoard.numChildren) {
-			
-			var child: DisplayObject = tileBoard.getChildAt(i);
-			
-			if (Std.is(child, Tile)) {
-				
-				tile = cast(child, Tile);
-				tile.setState(session.isTileTurned(tile.index.x, tile.index.y));
-			}
+		for (cell in cells) {
+			tiles.getCell(cell.x, cell.y).setState(session.isTileTurned(cell.x, cell.y));
 		}
 	}
 	
-	private function initControlPanel(): Void {
-		
-		panel = new Panel();
-		panel.applyButtonCb = applyButtonClick;
-		addChild(panel);
-	}
-	
-	private function applyButtonClick(): Void {
+	private function applyButtonClicked(): Void {
 		startNewSession({x: panel.rowsInput, y: panel.colsInput});
 	}
 }

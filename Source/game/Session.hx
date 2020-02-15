@@ -1,5 +1,6 @@
 package game;
 
+import model.Point.IntPoint;
 import game.Board;
 
 typedef SessionSettings = {
@@ -16,7 +17,7 @@ enum EState {
 
 class Session {
 	
-	public var onBoardChangeCb: Null<Void->Void> = null;
+	public var onBoardChangeCb: Null<Array<IntPoint>->Void> = null;
 	public var cols(get, null): Int;
 	public var rows(get, null): Int;
 	
@@ -56,20 +57,24 @@ class Session {
 	
 	public function tilePressed(x: Int, y: Int): Void {
 		
-		board.turnCell(x, y);
+		var isEdit: Bool = state.match(EState.Edit);
 		
-		if (board.isWin()) {
+		var changedCells: Array<IntPoint> = board.turnCell(x, y, isEdit);
+		
+		if (board.isWin() && !isEdit) {
 			setState(EState.Win);
 		}
 		
-		boardChanged();
+		boardChanged(changedCells);
 	}
 	
-	private function boardChanged(): Void {
+	private function boardChanged(changedCells: Array<IntPoint>): Void {
 		
 		if (onBoardChangeCb != null) {
-			onBoardChangeCb();
+			onBoardChangeCb(changedCells);
 		}
+		
+		changedCells.resize(0);
 	}
 	
 	private function setState(state: EState): Void {

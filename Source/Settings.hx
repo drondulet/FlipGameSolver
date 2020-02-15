@@ -8,6 +8,9 @@ class Settings {
 	static public final bgColor: Int = 0x505050;
 	static public final tileboardColor: Int = 0x202020;
 	static public final panelColor: Int = 0x303030;
+	static public final tileTurnedColor: Int = 0x24AFC4;
+	static public final tileNotTurnedColor: Int = 0x24AFC4 - 0x242424;
+	static public final buttonColor: Int = 0xAAAAAA;
 	static public final panelWidth: Int = 180;
 	static public final maxTilesCount: Int = 100;
 	static public final minTilesCount: Int = 2;

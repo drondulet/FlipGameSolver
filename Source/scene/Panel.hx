@@ -1,14 +1,14 @@
 package scene;
 
-import openfl.events.MouseEvent;
 import Settings;
 import model.Point;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
 import openfl.display.Sprite;
+import openfl.events.MouseEvent;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+
+using scene.SceneHelper;
 
 class Panel extends Sprite {
 	
@@ -54,7 +54,7 @@ class Panel extends Sprite {
 	}
 	
 	public function onStageResize(): Void {
-		fillColor();
+		this.fillColor(Settings.panelColor, {x: 0, y: 0, width: Settings.panelWidth, height: stage.stageHeight});
 	}
 	
 	public function get_rowsInput(): Int {
@@ -76,13 +76,6 @@ class Panel extends Sprite {
 		textField.text = '${number}';
 		
 		return number;
-	}
-	
-	private function fillColor(): Void {
-		
-		graphics.beginFill(Settings.panelColor);
-		graphics.drawRect(0, 0, Settings.panelWidth, stage.stageHeight);
-		graphics.endFill();
 	}
 	
 	private function createInputText(x: Int, y: Int, name: String): TextField {
@@ -123,17 +116,8 @@ class Panel extends Sprite {
 		button.useHandCursor = true;
 		button.buttonMode = true;
 		
-		button.graphics.beginFill(0xAAAAAA);
-		button.graphics.drawRoundRect(0, 0, size.x, size.y, 10, 10);
-		button.graphics.endFill();
-		
-		var bmpData: BitmapData = new BitmapData(size.x, size.y);
-		graphics.beginBitmapFill(bmpData);
-		graphics.endFill();
-		
-		var bmp: Bitmap = new Bitmap(bmpData);
-		bmp.visible = false;
-		button.addChild(bmp);
+		button.fillColor(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
+		button.addBmp(size);
 		
 		var text: TextField = createStaticText(Std.int(size.x * 0.3), Std.int(size.y * 0.15), text);
 		button.addChild(text);

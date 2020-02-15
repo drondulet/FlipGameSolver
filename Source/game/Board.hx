@@ -16,15 +16,21 @@ class Board {
 		this.winValue = winValue;
 	}
 	
-	public function turnCell(x: Int, y: Int): Void {
+	public function turnCell(x: Int, y: Int, ?isSingle: Bool = false): Array<IntPoint> {
 		
-		var flippingCells: Array<IntPoint> = getFlippingCells(x, y);
+		var flippingCells: Array<IntPoint> = isSingle ? [{x: x, y: y}] : getFlippingCells(x, y);
 		
 		for (cell in flippingCells) {
-			
-			var newValue: Int = invertValue(cells.getSell(cell.x, cell.y));
-			cells.setSell(newValue, cell.x, cell.y);
+			invertCell(cell.x, cell.y);
 		}
+		
+		return flippingCells;
+	}
+	
+	private function invertCell(x: Int, y: Int): Void {
+		
+		var newValue: Int = invertValue(cells.getCell(x, y));
+		cells.setCell(newValue, x, y);
 	}
 	
 	inline public function invertValue(value: Int): Int {
@@ -55,7 +61,7 @@ class Board {
 		
 		for (x in 0 ... xSize) {
 			for (y in 0 ... ySize) {
-				if (cells.getSell(x, y) != winValue) {
+				if (cells.getCell(x, y) != winValue) {
 					return false;
 				}
 			}
