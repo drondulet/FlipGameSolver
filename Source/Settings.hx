@@ -3,7 +3,7 @@ package;
 class Settings {
 	static public final tilesGap: Float = 2.0;
 	static public final tileSize: Int = 40;
-	static public final rows: Int = 5;
+	static public final rows: Int = 3;
 	static public final cols: Int = rows;
 	static public final bgColor: Int = 0x505050;
 	static public final tileboardColor: Int = 0x202020;
