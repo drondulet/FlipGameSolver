@@ -22,6 +22,7 @@ class Panel extends Sprite {
 	public var applyButtonCb: Void->Void;
 	public var editButtonCb: Void->Void;
 	public var randomButtonCb: Void->Void;
+	public var solveButtonCb: Void->Void;
 	
 	private final textFormat: TextFormat = new TextFormat("Lucida", 18, 0x80FF80);
 	private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, 0x80FF80, true);
@@ -60,6 +61,10 @@ class Panel extends Sprite {
 		var randomButton: Sprite = createButton({x: 10, y: 200}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.randomBtnText);
 		randomButton.addEventListener(MouseEvent.CLICK, (e) -> randomButtonCb());
 		addChild(randomButton);
+		
+		var solveButton: Sprite = createButton({x: 10, y: 250}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.solveBtnText);
+		solveButton.addEventListener(MouseEvent.CLICK, (e) -> solveButtonCb());
+		addChild(solveButton);
 	}
 	
 	public function onStageResize(): Void {

@@ -18,4 +18,5 @@ class Settings {
 	static public final editBtnText: String = 'Edit mode';
 	static public final editDoneBtnText: String = 'Done';
 	static public final randomBtnText: String = 'Random';
+	static public final solveBtnText: String = 'Solve';
 }

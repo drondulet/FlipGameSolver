@@ -32,15 +32,15 @@ class Session {
 	}
 	
 	public function get_cols(): Int {
-		return board.xSize;
+		return board.cols;
 	}
 	
 	public function get_rows(): Int {
-		return board.ySize;
+		return board.rows;
 	}
 	
-	public function isTileTurned(x: Int, y: Int): Bool {
-		return board.cells.mat[x][y] == 0 ? true : false;
+	public function isTileTurned(col: Int, row: Int): Bool {
+		return board.cells.getCell(col, row) == 0 ? true : false;
 	}
 	
 	public function switchEditMode(): Void {
@@ -85,6 +85,10 @@ class Session {
 		}
 		
 		boardChanged(changedCells);
+	}
+	
+	public function findSolution(): Array<IntPoint> {
+		return board.findSolution();
 	}
 	
 	private function boardChanged(changedCells: Array<IntPoint>): Void {

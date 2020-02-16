@@ -52,6 +52,7 @@ class Scene extends Sprite {
 		panel.applyButtonCb = applyButtonClicked;
 		panel.editButtonCb = editButtonClicked;
 		panel.randomButtonCb = randomButtonClicked;
+		panel.solveButtonCb = solveButtonClicked;
 		addChild(panel);
 	}
 	
@@ -89,14 +90,13 @@ class Scene extends Sprite {
 		
 		tiles = new Matrix(session.cols, session.rows);
 		
-		for (i in 0 ... session.cols) {
-			for (j in 0 ... session.rows) {
+		for (col in 0 ... session.cols) {
+			for (row in 0 ... session.rows) {
 				
-				
-				tile = new Tile(Settings.tileSize, {x: i, y: j}, session.isTileTurned(i, j));
-				tile.x = i * tile.width + i * Settings.tilesGap + Settings.tilesGap;
-				tile.y = j * tile.height + j * Settings.tilesGap + Settings.tilesGap;
-				tiles.setCell(tile, i, j);
+				tile = new Tile(Settings.tileSize, {x: col, y: row}, session.isTileTurned(col, row));
+				tile.x = col * tile.width + col * Settings.tilesGap + Settings.tilesGap;
+				tile.y = row * tile.height + row * Settings.tilesGap + Settings.tilesGap;
+				tiles.setCell(tile, col, row);
 				tileBoard.addChild(tile);
 			}
 		}
@@ -149,7 +149,7 @@ class Scene extends Sprite {
 			return;
 		}
 		
-		startNewSession({x: panel.rowsInput, y: panel.colsInput});
+		startNewSession({x: panel.colsInput, y: panel.rowsInput});
 	}
 	
 	private function editButtonClicked(): Void {
@@ -163,5 +163,18 @@ class Scene extends Sprite {
 		}
 		
 		session.fillRandom();
+	}
+	
+	private function solveButtonClicked(): Void {
+		
+		if (session.isEditMode()) {
+			return;
+		}
+		
+		var solutionCells: Array<IntPoint> = session.findSolution();
+		
+		if (solutionCells.length == 0) {
+			trace('No soltion');
+		}
 	}
 }
