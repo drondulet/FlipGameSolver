@@ -69,7 +69,7 @@ class Board {
 		var solutionCells: Array<IntPoint> = [];
 		
 		var solver: Solver = Solver.instance;
-		var matrix: Null<Matrix<Int>> = solver.solve(this, 0);
+		var matrix: Null<Matrix<Int>> = solver.solve(this);
 		
 		if (matrix != null) {
 			

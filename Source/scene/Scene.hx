@@ -5,6 +5,7 @@ import game.Session;
 import model.Matrix;
 import model.Point;
 import openfl.display.DisplayObject;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
@@ -17,6 +18,7 @@ class Scene extends Sprite {
 	private var tileBoard: Null<Sprite>;
 	private var panel: Null<Panel>;
 	private var tiles: Matrix<Tile>;
+	private var solutionTiles: Null<Matrix<Null<Shape>>>;
 	
 	public function new() {
 		super();
@@ -43,6 +45,7 @@ class Scene extends Sprite {
 		
 		initTileBoard();
 		removeAllTiles();
+		clearSolutions();
 		addTiles();
 	}
 	
@@ -76,7 +79,21 @@ class Scene extends Sprite {
 		if (Std.is(event.target, Tile)) {
 			
 			var tile: Tile = cast(event.target, Tile);
-			session.tilePressed(tile.index.x, tile.index.y);
+			var col: Int = tile.index.x;
+			var row: Int = tile.index.y;
+			
+			session.tilePressed(col, row);
+			
+			if (solutionTiles != null) {
+				
+				var solutionDot: Null<Shape> = solutionTiles.getCell(col, row);
+				
+				if (solutionDot != null) {
+					
+					solutionTiles.setCell(null, col, row);
+					tileBoard.removeChild(solutionDot);
+				}
+			}
 		}
 	}
 	
@@ -174,7 +191,47 @@ class Scene extends Sprite {
 		var solutionCells: Array<IntPoint> = session.findSolution();
 		
 		if (solutionCells.length == 0) {
-			trace('No soltion');
+			trace('No solution');
+		}
+		else {
+			addSolutionTiles(solutionCells);
+		}
+	}
+	
+	private function addSolutionTiles(solutionCells: Array<IntPoint>): Void {
+		
+		solutionTiles = new Matrix(session.cols, session.rows);
+		
+		var dotSize: Int = Settings.solutionDotSize;
+		var offset: Float = Settings.tileSize * 0.5;
+		var dot: Shape;
+		var tile: Tile;
+		
+		for (cell in solutionCells) {
+			
+			tile = tiles.getCell(cell.x, cell.y);
+			
+			dot = new Shape();
+			dot.graphics.beginFill(Settings.solutionDotColor);
+			dot.graphics.drawCircle(tile.x + offset, tile.y + offset, dotSize);
+			dot.graphics.endFill();
+			
+			tileBoard.addChild(dot);
+			solutionTiles.setCell(dot, cell.x, cell.y);
+		}
+	}
+	
+	private function clearSolutions(): Void {
+		
+		if (solutionTiles != null) {
+			
+			for (dot in solutionTiles) {
+				if (dot != null) {
+					tileBoard.removeChild(dot);
+				}
+			}
+			
+			solutionTiles.fill(null);
 		}
 	}
 }
