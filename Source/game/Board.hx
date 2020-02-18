@@ -53,11 +53,9 @@ class Board {
 	
 	public function isWin(): Bool {
 		
-		for (col in 0 ... cols) {
-			for (row in 0 ... rows) {
-				if (cells.getCell(col, row) != winValue) {
-					return false;
-				}
+		for (value in cells) {
+			if (value != winValue) {
+				return false;
 			}
 		}
 		
@@ -69,7 +67,7 @@ class Board {
 		var solutionCells: Array<IntPoint> = [];
 		
 		var solver: Solver = Solver.instance;
-		var matrix: Null<Matrix<Int>> = solver.solve(this);
+		var matrix: Null<Matrix<Int>> = solver.solve(cells);
 		
 		if (matrix != null) {
 			

@@ -13,8 +13,8 @@ using scene.SceneHelper;
 
 class SceneHelper {
 	
-	static private final textFormat: TextFormat = new TextFormat("Lucida", 18, 0x80FF80);
-	static private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, 0x80FF80, true);
+	static private final textFormat: TextFormat = new TextFormat("Lucida", 18, Settings.textColor);
+	static private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, Settings.textColor, true);
 	
 	static public function fillColor(object: Sprite, color: Int, rect: Rect, ?ellips: Float = 0): Void {
 		
@@ -76,7 +76,7 @@ class SceneHelper {
 		button.fillColor(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
 		button.addBmp(size);
 		
-		var text: TextField = createStaticText(Std.int(size.x * 0.15), Std.int(size.y * 0.15), text);
+		var text: TextField = createStaticText(Std.int(size.x * 0.15), Std.int(size.y * 0.1), text);
 		text.name = textBtnName != null ? textBtnName : text.name;
 		button.addChild(text);
 		

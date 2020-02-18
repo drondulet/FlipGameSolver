@@ -1,5 +1,6 @@
 package scene;
 
+import openfl.display.DisplayObject;
 import Settings;
 import model.Point;
 import openfl.display.Sprite;
@@ -19,6 +20,7 @@ class Panel extends Sprite {
 	
 	public var rowsInput(get, null): Int;
 	public var colsInput(get, null): Int;
+	
 	public var applyButtonCb: Void->Void;
 	public var editButtonCb: Void->Void;
 	public var randomButtonCb: Void->Void;
@@ -48,23 +50,56 @@ class Panel extends Sprite {
 		addChild(SceneHelper.createStaticText(indentText, 50, rowsName));
 		addChild(SceneHelper.createStaticText(indentText, 80, colsName));
 		
-		var applyButton: Sprite = SceneHelper.createButton({x: 10, y: 120}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.resetBtnText);
+		var btnOffset: Int = 10;
+		var btnWidth: Int = 30;
+		var btnPosY: Int = 120;
+		var btnPosYOffset: Int = 40;
+		
+		var applyButton: Sprite = SceneHelper.createButton(
+			{x: btnOffset, y: btnPosY},
+			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			Settings.resetBtnText);
+		
 		applyButton.addEventListener(MouseEvent.CLICK, (e) -> applyButtonCb());
 		addChild(applyButton);
 		
-		var editButton: Sprite = SceneHelper.createButton({x: 10, y: 160}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.editBtnText, textBtnName);
+		btnPosY += btnPosYOffset;
+		
+		var editButton: Sprite = SceneHelper.createButton(
+			{x: btnOffset, y: btnPosY},
+			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			Settings.editBtnText, textBtnName);
+		
 		editButton.addEventListener(MouseEvent.CLICK, editBtnClicked);
 		addChild(editButton);
 		
-		var randomButton: Sprite = SceneHelper.createButton({x: 10, y: 200}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.randomBtnText);
+		btnPosY += btnPosYOffset;
+		
+		var randomButton: Sprite = SceneHelper.createButton(
+			{x: btnOffset, y: btnPosY},
+			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			Settings.randomBtnText);
+		
 		randomButton.addEventListener(MouseEvent.CLICK, (e) -> randomButtonCb());
 		addChild(randomButton);
 		
-		var smartRndButton: Sprite = SceneHelper.createButton({x: 10, y: 240}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.smartRndBtnText);
+		btnPosY += btnPosYOffset;
+		
+		var smartRndButton: Sprite = SceneHelper.createButton(
+			{x: btnOffset, y: btnPosY},
+			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			Settings.smartRndBtnText);
+		
 		smartRndButton.addEventListener(MouseEvent.CLICK, (e) -> smartRndButtonCb());
 		addChild(smartRndButton);
 		
-		var solveButton: Sprite = SceneHelper.createButton({x: 10, y: 300}, {x: Settings.panelWidth - 10 * 2, y: 30}, Settings.solveBtnText);
+		btnPosY += btnPosYOffset * 2;
+		
+		var solveButton: Sprite = SceneHelper.createButton(
+			{x: btnOffset, y: btnPosY},
+			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			Settings.solveBtnText);
+		
 		solveButton.addEventListener(MouseEvent.CLICK, (e) -> solveButtonCb());
 		addChild(solveButton);
 	}
@@ -96,7 +131,7 @@ class Panel extends Sprite {
 	
 	private function editBtnClicked(e: Event): Void {
 		
-		var text:TextField;
+		var text: TextField;
 		
 		if (Std.is(e.target, Sprite)) {
 			
@@ -110,8 +145,43 @@ class Panel extends Sprite {
 			throw 'click on button with something not sprite or text';
 		}
 		
-		text.text = text.text == Settings.editBtnText ? Settings.editDoneBtnText : Settings.editBtnText;
+		if (text.text == Settings.editBtnText) {
+			
+			text.text = Settings.editDoneBtnText;
+			hideButtons([cast(text.parent, Sprite)]);
+		}
+		else {
+			
+			text.text = Settings.editBtnText;
+			showButtons();
+		}
 		
 		editButtonCb();
+	}
+	
+	private function hideButtons(exept: Array<Sprite>): Void {
+		
+		for (i in 0 ... numChildren) {
+			
+			var child: DisplayObject = getChildAt(i);
+			
+			if (Std.is(child, Sprite)) {
+				
+				var sprite: Sprite = cast(child, Sprite);
+				
+				if (exept.indexOf(sprite) < 0) {
+					sprite.visible = false;
+				}
+			}
+		}
+	}
+	
+	private function showButtons(): Void {
+		
+		for (i in 0 ... numChildren) {
+			
+			var child: DisplayObject = getChildAt(i);
+			child.visible = true;
+		}
 	}
 }

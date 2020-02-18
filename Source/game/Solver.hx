@@ -10,7 +10,7 @@ class Solver {
 	static private var calcMat: Matrix<Int>;
 	static private var calMatRows: Int;
 	
-	inline static public function get_instance(): Null<Solver> {
+	static public function get_instance(): Solver {
 		
 		if (instance == null) {
 			instance = new Solver();
@@ -23,20 +23,32 @@ class Solver {
 		
 	}
 	
-	public function solve(board: Board): Null<Matrix<Int>> {
+	public function solve(gameMatrix: Matrix<Int>): Null<Matrix<Int>> {
 		
-		var solutionMat: Matrix<Int> = new Matrix(board.cols, board.rows);
+		var rows: Int = gameMatrix.rows;
+		var cols: Int = gameMatrix.cols;
 		
-		var patternMat: Matrix<Int> = generatePatternMatrix(board.cols);
-		var cellsVector: Vector<Int> = unwrapGameCells(board.cells);
+		if (cols != rows) {
+			return null;
+		}
 		
-		makeCalMatrix(patternMat, cellsVector);
+		var patternMat: Matrix<Int> = generatePatternMatrix(cols);
+		var cellsVector: Vector<Int> = unwrapGameCells(gameMatrix);
 		
-		var solutionVector: Vector<Int> = gaussianElimination();
+		makeCalcMatrix(patternMat, cellsVector);
+		
+		var solutionVector: Null<Vector<Int>> = gaussianElimination();
+		
+		if (solutionVector == null) {
+			return null;
+		}
+		
+		var solutionMat: Matrix<Int> = new Matrix(cols, rows);
 		var i: Int = 0;
 		
-		for (row in 0 ... board.rows) {
-			for (col in 0 ... board.cols) {
+		for (row in 0 ... rows) {
+			for (col in 0 ... cols) {
+				
 				solutionMat.setCell(solutionVector[i], col, row);
 				i++;
 			}
@@ -98,7 +110,7 @@ class Solver {
 		return result;
 	}
 	
-	private function makeCalMatrix(patternMat: Matrix<Int>, cellsVector: Vector<Int>): Void {
+	private function makeCalcMatrix(patternMat: Matrix<Int>, cellsVector: Vector<Int>): Void {
 		
 		var fullCols: Int = patternMat.cols + 1;
 		var rows: Int = patternMat.rows;
@@ -115,12 +127,12 @@ class Solver {
 		}
 	}
 	
-	private function gaussianElimination(): Vector<Int> {
-		
-		var solution: Vector<Int> = new Vector(calcMat.rows);
+	private function gaussianElimination(): Null<Vector<Int>> {
 		
 		forwardFlow();
 		backwardFlow();
+		
+		var solution: Vector<Int> = new Vector(calcMat.rows);
 		
 		for (i in 0 ... calcMat.rows) {
 			solution[i] = calcMat.getCell(calcMat.cols - 1, i);
@@ -131,19 +143,20 @@ class Solver {
 	
 	private function forwardFlow(): Void {
 		
-		var size: Int = calcMat.rows;
+		// -1 col with solution values
+		var cols: Int = calcMat.cols - 1;
+		var rows: Int = calcMat.rows;
 		
-		for (row in 0 ... size) {
-			for (col in 0 ... row) {
+		for (col in 0 ... cols) {
+			
+			if (calcMat.getCell(col, col) != 1) {
+				swapStep(col, col);
+			}
+			
+			for (row in col + 1 ... rows) {
 				
 				if (calcMat.getCell(col, row) != 0) {
-					
-					if (swapStep(col, row)) {
-						break;
-					}
-					else {
-						calculationStep(col, row);
-					}
+					addRows(col, row);
 				}
 			}
 		}
@@ -151,18 +164,18 @@ class Solver {
 	
 	private function backwardFlow(): Void {
 		
-		var size: Int = calcMat.rows;
-		
-		var col: Int = size - 2;
-		var row: Int;
+		// -1 for cycle, -1 col with solution values
+		var col: Int = calcMat.cols - 2;
+		var row: Int = calcMat.rows;
 		
 		while (col > -1) {
 			
-			row = col;
+			row = col - 1;
 			while (row > -1){
 				
-				// if (!= 0)
-				calculationStep(col, row, true);
+				if (calcMat.getCell(col, row) != 0) {
+					addRows(col, row);
+				}
 				row--;
 			}
 			
@@ -170,48 +183,23 @@ class Solver {
 		}
 	}
 	
-	private function calculationStep(col: Int, row: Int, ?isReverse: Bool = false): Void {
+	private function swapStep(col: Int, row: Int) {
 		
-		var size: Int = calcMat.rows;
+		var rows: Int = calcMat.rows;
 		
-		var from: Int = isReverse ? row + 1 : 0;
-		var to: Int = isReverse ? size : row;
-		
-		for (c in from ... to) {
+		for (r in row + 1 ... rows) {
 			
-			if (calcMat.getCell(c, row) != 0) {
-				addRows(c, row);
-			}
-		}
-	}
-	
-	private function swapStep(col: Int, row: Int): Bool {
-		
-		var size: Int = calcMat.rows;
-		var canSwap: Bool;
-		
-		for (r in row + 1 ... size) {
-			
-			canSwap = true;
-			for (c in 0 ... row) {
-				
-				if (calcMat.getCell(c, r) != 0) {
-					
-					canSwap = false;
-					break;
-				}
-			}
-			
-			if (canSwap) {
+			if (calcMat.getCell(col, r) != 0) {
 				
 				swapRows(row, r);
-				return true;
+				return;
 			}
 		}
-		
-		return false;
 	}
 	
+	/**
+		adds row1 to row2, row2 will be replaced!
+	**/
 	private function addRows(row1: Int, row2: Int): Void {
 		
 		var size: Int = calcMat.cols;

@@ -45,7 +45,7 @@ class Scene extends Sprite {
 		
 		initTileBoard();
 		removeAllTiles();
-		clearSolutions();
+		clearSolutionDots();
 		addTiles();
 	}
 	
@@ -67,12 +67,20 @@ class Scene extends Sprite {
 		}
 		
 		tileBoard = new Sprite();
-		tileBoard.x = 200;
-		tileBoard.y = 50;
+		tileBoard.x = Settings.panelWidth + Settings.tileBoardOffset;
+		tileBoard.y = Settings.tileBoardOffset;
 		
 		tileBoard.addEventListener(MouseEvent.CLICK, handleBoardClick);
 		
 		addChild(tileBoard);
+	}
+	
+	private function resizeTileBoard(x: Int, y: Int): Void {
+		tileBoard.fillColor(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
+	}
+	
+	private function fillBgColor(): Void {
+		this.fillColor(Settings.bgColor, {x: 0 , y: 0, width: stage.stageWidth, height: stage.stageHeight});
 	}
 	
 	private function handleBoardClick(event: Event): Void {
@@ -98,34 +106,28 @@ class Scene extends Sprite {
 		}
 	}
 	
-	private function resizeTileBoard(x: Int, y: Int): Void {
-		tileBoard.fillColor(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
-	}
-	
 	private function addTiles(): Void {
 		
 		var tile: Tile;
+		var tileSize: Int = Settings.tileSize;
+		var tilesGap: Float = Settings.tilesGap;
 		
 		tiles = new Matrix(session.cols, session.rows);
 		
 		for (col in 0 ... session.cols) {
 			for (row in 0 ... session.rows) {
 				
-				tile = new Tile(Settings.tileSize, {x: col, y: row}, session.isTileTurned(col, row));
-				tile.x = col * tile.width + col * Settings.tilesGap + Settings.tilesGap;
-				tile.y = row * tile.height + row * Settings.tilesGap + Settings.tilesGap;
+				tile = new Tile(tileSize, {x: col, y: row}, session.isTileTurned(col, row));
+				tile.x = col * tile.width + col * tilesGap + tilesGap;
+				tile.y = row * tile.height + row * tilesGap + tilesGap;
 				tiles.setCell(tile, col, row);
 				tileBoard.addChild(tile);
 			}
 		}
 		
-		var xSize: Int = Std.int(session.cols * (Settings.tileSize + Settings.tilesGap) + Settings.tilesGap);
-		var ySize: Int = Std.int(session.rows * (Settings.tileSize + Settings.tilesGap) + Settings.tilesGap);
+		var xSize: Int = Std.int(session.cols * (tileSize + tilesGap) + tilesGap);
+		var ySize: Int = Std.int(session.rows * (tileSize + tilesGap) + tilesGap);
 		resizeTileBoard(xSize, ySize);
-	}
-	
-	private function fillBgColor(): Void {
-		this.fillColor(Settings.bgColor, {x: 0 , y: 0, width: stage.stageWidth, height: stage.stageHeight});
 	}
 	
 	private function onBoardChanged(cells: Array<IntPoint>): Void {
@@ -144,6 +146,10 @@ class Scene extends Sprite {
 	}
 	
 	private function removeAllTiles(): Void {
+		
+		if (tiles != null) {
+			tiles.fill(null);
+		}
 		
 		var i: Int = 0;
 		
@@ -204,13 +210,14 @@ class Scene extends Sprite {
 			showMsgBox('No solution.');
 		}
 		else {
-			addSolutionTiles(solutionCells);
+			addSolutionDots(solutionCells);
 		}
 	}
 	
-	private function addSolutionTiles(solutionCells: Array<IntPoint>): Void {
+	private function addSolutionDots(solutionCells: Array<IntPoint>): Void {
 		
-		clearSolutions();
+		clearSolutionDots();
+		
 		solutionTiles = new Matrix(session.cols, session.rows);
 		
 		var dotSize: Int = Settings.solutionDotSize;
@@ -232,7 +239,7 @@ class Scene extends Sprite {
 		}
 	}
 	
-	private function clearSolutions(): Void {
+	private function clearSolutionDots(): Void {
 		
 		if (solutionTiles != null) {
 			

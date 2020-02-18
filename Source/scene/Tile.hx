@@ -8,15 +8,15 @@ using scene.SceneHelper;
 class Tile extends Sprite {
 	
 	public var size(default, null): Int;
-	public var index: IntPoint;
+	public var index(default, null): IntPoint;
 	
 	private var isTurned: Bool;
 	
-	public function new(size: Float, index: IntPoint, isTurned: Bool) {
+	public function new(size: Int, index: IntPoint, isTurned: Bool) {
 		
 		super();
 		
-		this.size = Std.int(size);
+		this.size = size;
 		this.index = index;
 		this.isTurned = isTurned;
 		

@@ -78,7 +78,8 @@ class Session {
 		
 		if (isSmart) {
 			
-			var turns: Int = board.rows + Std.random(5);
+			var turns: Int = board.rows + Std.random(10);
+			
 			for (i in 0 ... turns) {
 				
 				var point: IntPoint = {x: Std.random(cols), y: Std.random(rows)};
@@ -113,12 +114,6 @@ class Session {
 	}
 	
 	private function setState(state: EState): Void {
-		
-		switch (state) {
-			
-			default:
-		}
-		
 		this.state = state;
 	}
 }
