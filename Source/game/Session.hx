@@ -79,6 +79,7 @@ class Session {
 		if (isSmart) {
 			
 			var turns: Int = board.rows + Std.random(10);
+			board.cells.fill(0);
 			
 			for (i in 0 ... turns) {
 				
