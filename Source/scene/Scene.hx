@@ -52,10 +52,11 @@ class Scene extends Sprite {
 	private function initControlPanel(): Void {
 		
 		panel = new Panel();
-		panel.applyButtonCb = applyButtonClicked;
-		panel.editButtonCb = editButtonClicked;
-		panel.randomButtonCb = randomButtonClicked;
-		panel.solveButtonCb = solveButtonClicked;
+		panel.applyButtonCb = onApplyBtnClicked;
+		panel.editButtonCb = onEditBtnClicked;
+		panel.randomButtonCb = onRandomBtnClicked;
+		panel.smartRndButtonCb = onSmartRndBtnClicked;
+		panel.solveButtonCb = onSolveBtnClicked;
 		addChild(panel);
 	}
 	
@@ -138,7 +139,7 @@ class Scene extends Sprite {
 	
 	private function onWin(): Void {
 		
-		trace('Win!');
+		showMsgBox('You win!');
 		session.setPlayMode();
 	}
 	
@@ -160,7 +161,7 @@ class Scene extends Sprite {
 		}
 	}
 	
-	private function applyButtonClicked(): Void {
+	private function onApplyBtnClicked(): Void {
 		
 		if (session.isEditMode()) {
 			return;
@@ -169,11 +170,11 @@ class Scene extends Sprite {
 		startNewSession({x: panel.colsInput, y: panel.rowsInput});
 	}
 	
-	private function editButtonClicked(): Void {
+	private function onEditBtnClicked(): Void {
 		session.switchEditMode();
 	}
 	
-	private function randomButtonClicked(): Void {
+	private function onRandomBtnClicked(): Void {
 		
 		if (session.isEditMode()) {
 			return;
@@ -182,7 +183,16 @@ class Scene extends Sprite {
 		session.fillRandom();
 	}
 	
-	private function solveButtonClicked(): Void {
+	private function onSmartRndBtnClicked(): Void {
+		
+		if (session.isEditMode()) {
+			return;
+		}
+		
+		session.fillRandom(true);
+	}
+	
+	private function onSolveBtnClicked(): Void {
 		
 		if (session.isEditMode()) {
 			return;
@@ -191,7 +201,7 @@ class Scene extends Sprite {
 		var solutionCells: Array<IntPoint> = session.findSolution();
 		
 		if (solutionCells.length == 0) {
-			trace('No solution');
+			showMsgBox('No solution.');
 		}
 		else {
 			addSolutionTiles(solutionCells);
@@ -200,6 +210,7 @@ class Scene extends Sprite {
 	
 	private function addSolutionTiles(solutionCells: Array<IntPoint>): Void {
 		
+		clearSolutions();
 		solutionTiles = new Matrix(session.cols, session.rows);
 		
 		var dotSize: Int = Settings.solutionDotSize;
@@ -233,5 +244,13 @@ class Scene extends Sprite {
 			
 			solutionTiles.fill(null);
 		}
+	}
+	
+	private function showMsgBox(message: String): Void {
+		
+		var size: IntPoint = {x: 300, y: 200};
+		var pos: IntPoint = {x: Std.int(stage.stageWidth * 0.5 - size.x * 0.5), y: Std.int(stage.stageHeight * 0.5 - size.y * 0.5)};
+		var mgsBox: Sprite = new MessageBox(message, size, pos);
+		addChild(mgsBox);
 	}
 }

@@ -72,15 +72,27 @@ class Session {
 		boardChanged(changedCells);
 	}
 	
-	public function fillRandom(): Void {
+	public function fillRandom(?isSmart: Bool = false): Void {
 		
 		var changedCells: Array<IntPoint> = [];
 		
-		for (i in 0 ... cols) {
-			for (j in 0 ... rows) {
+		if (isSmart) {
+			
+			var turns: Int = board.rows + Std.random(5);
+			for (i in 0 ... turns) {
 				
-				changedCells.push({x: i, y: j});
-				board.cells.setCell(Std.random(2), i, j);
+				var point: IntPoint = {x: Std.random(cols), y: Std.random(rows)};
+				tilePressed(point.x, point.y);
+			}
+		}
+		else {
+			
+			for (i in 0 ... cols) {
+				for (j in 0 ... rows) {
+					
+					changedCells.push({x: i, y: j});
+					board.cells.setCell(Std.random(2), i, j);
+				}
 			}
 		}
 		

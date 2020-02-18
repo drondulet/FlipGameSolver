@@ -73,8 +73,6 @@ class Board {
 		
 		if (matrix != null) {
 			
-			trace(matrix);
-			
 			for (col in 0 ... cols) {
 				for (row in 0 ... rows) {
 					

@@ -13,6 +13,7 @@ class Settings {
 	static public final tileNotTurnedColor: Int = 0x24AFC4 - 0x244040;
 	static public final solutionDotColor: Int = 0xFFA500;
 	static public final buttonColor: Int = 0xAAAAAA;
+	static public final msgBoxColor: Int = panelColor;
 	static public final panelWidth: Int = 180;
 	static public final maxTilesCount: Int = 100;
 	static public final minTilesCount: Int = 2;
@@ -20,5 +21,6 @@ class Settings {
 	static public final editBtnText: String = 'Edit mode';
 	static public final editDoneBtnText: String = 'Done';
 	static public final randomBtnText: String = 'Random';
+	static public final smartRndBtnText: String = 'Smart random';
 	static public final solveBtnText: String = 'Solve';
 }
