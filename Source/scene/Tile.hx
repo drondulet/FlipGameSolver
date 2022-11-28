@@ -3,7 +3,7 @@ package scene;
 import openfl.display.Sprite;
 import model.Point;
 
-using scene.SceneHelper;
+using GraphicsHelper;
 
 class Tile extends Sprite {
 	

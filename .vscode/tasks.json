@@ -10,6 +10,21 @@
 	},
 	"tasks": [
 		{
+			"label": "HTML debug",
+			"type": "shell",
+			"command": "openfl build html5 -debug",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
 			"label": "HL debug",
 			"type": "shell",
 			"command": "openfl build hl -debug",
@@ -21,7 +36,7 @@
 			],
 			"group": {
 				"kind": "build",
-				"isDefault": true
+				"isDefault": false
 			}
 		}
 	]

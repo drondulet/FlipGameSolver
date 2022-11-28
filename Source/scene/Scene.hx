@@ -9,8 +9,10 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
+import ui.MessageBox;
+import ui.Panel;
 
-using scene.SceneHelper;
+using GraphicsHelper;
 
 class Scene extends Sprite {
 	

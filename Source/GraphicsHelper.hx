@@ -1,4 +1,4 @@
-package scene;
+package;
 
 import model.Point;
 import model.Rect;
@@ -6,12 +6,12 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.text.TextField;
-import openfl.text.TextFormat;
 import openfl.text.TextFieldType;
+import openfl.text.TextFormat;
 
-using scene.SceneHelper;
+using GraphicsHelper;
 
-class SceneHelper {
+class GraphicsHelper {
 	
 	static private final textFormat: TextFormat = new TextFormat("Lucida", 18, Settings.textColor);
 	static private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, Settings.textColor, true);
@@ -60,26 +60,9 @@ class SceneHelper {
 		input.text = text;
 		input.height = input.textHeight + 2;
 		input.width = text.length * 12;
+		input.selectable = false;
 		// input.border = true;
 		
 		return input;
-	}
-	
-	static public function createButton(pos: IntPoint, size: IntPoint, text: String, ?textBtnName: Null<String> = null): Sprite {
-		
-		var button: Sprite = new Sprite();
-		button.x = pos.x;
-		button.y = pos.y;
-		button.useHandCursor = true;
-		button.buttonMode = true;
-		
-		button.fillColor(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
-		button.addBmp(size);
-		
-		var text: TextField = createStaticText(Std.int(size.x * 0.15), Std.int(size.y * 0.1), text);
-		text.name = textBtnName != null ? textBtnName : text.name;
-		button.addChild(text);
-		
-		return button;
 	}
 }

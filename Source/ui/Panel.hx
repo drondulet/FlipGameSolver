@@ -1,16 +1,15 @@
-package scene;
+package ui;
 
-import openfl.display.DisplayObject;
 import Settings;
-import model.Point;
+import openfl.display.DisplayObject;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextField;
-import openfl.text.TextFieldType;
-import openfl.text.TextFormat;
+import ui.Button;
 
-using scene.SceneHelper;
+using GraphicsHelper;
+
 
 class Panel extends Sprite {
 	
@@ -27,9 +26,14 @@ class Panel extends Sprite {
 	public var smartRndButtonCb: Void->Void;
 	public var solveButtonCb: Void->Void;
 	
+	private var editButton: Button;
+	private var editMode: Bool;
+	private var buttonsToHide: Array<Button>;
+	
 	public function new() {
 		
 		super();
+		editMode = false;
 		init();
 	}
 	
@@ -38,70 +42,77 @@ class Panel extends Sprite {
 		final indentText: Int = 10;
 		final indentInput: Int = 100;
 		
-		var rows: TextField = SceneHelper.createInputText(indentInput, 50, rowsName);
+		var rows: TextField = GraphicsHelper.createInputText(indentInput, 50, rowsName);
 		rows.text = '${Settings.rows}';
 		
-		var cols: TextField = SceneHelper.createInputText(indentInput, 80, colsName);
+		var cols: TextField = GraphicsHelper.createInputText(indentInput, 80, colsName);
 		cols.text = '${Settings.cols}';
 		
 		addChild(rows);
 		addChild(cols);
 		
-		addChild(SceneHelper.createStaticText(indentText, 50, rowsName));
-		addChild(SceneHelper.createStaticText(indentText, 80, colsName));
+		addChild(GraphicsHelper.createStaticText(indentText, 50, rowsName));
+		addChild(GraphicsHelper.createStaticText(indentText, 80, colsName));
 		
 		var btnOffset: Int = 10;
 		var btnWidth: Int = 30;
 		var btnPosY: Int = 120;
 		var btnPosYOffset: Int = 40;
 		
-		var applyButton: Sprite = SceneHelper.createButton(
-			{x: btnOffset, y: btnPosY},
+		var applyButton: Button = Button.create(
 			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			() -> applyButtonCb(),
 			Settings.resetBtnText);
 		
-		applyButton.addEventListener(MouseEvent.CLICK, (e) -> applyButtonCb());
+		applyButton.x = btnOffset;
+		applyButton.y = btnPosY;
 		addChild(applyButton);
 		
 		btnPosY += btnPosYOffset;
 		
-		var editButton: Sprite = SceneHelper.createButton(
-			{x: btnOffset, y: btnPosY},
+		editButton = Button.create(
 			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
-			Settings.editBtnText, textBtnName);
+			editBtnClicked,
+			Settings.editBtnText);
 		
-		editButton.addEventListener(MouseEvent.CLICK, editBtnClicked);
+		editButton.x = btnOffset;
+		editButton.y = btnPosY;
 		addChild(editButton);
 		
 		btnPosY += btnPosYOffset;
 		
-		var randomButton: Sprite = SceneHelper.createButton(
-			{x: btnOffset, y: btnPosY},
+		var randomButton: Button = Button.create(
 			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			() -> randomButtonCb(),
 			Settings.randomBtnText);
 		
-		randomButton.addEventListener(MouseEvent.CLICK, (e) -> randomButtonCb());
+		randomButton.x = btnOffset;
+		randomButton.y = btnPosY;
 		addChild(randomButton);
 		
 		btnPosY += btnPosYOffset;
 		
-		var smartRndButton: Sprite = SceneHelper.createButton(
-			{x: btnOffset, y: btnPosY},
+		var smartRndButton: Button = Button.create(
 			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			() -> smartRndButtonCb(),
 			Settings.smartRndBtnText);
 		
-		smartRndButton.addEventListener(MouseEvent.CLICK, (e) -> smartRndButtonCb());
+		smartRndButton.x = btnOffset;
+		smartRndButton.y = btnPosY;
 		addChild(smartRndButton);
 		
 		btnPosY += btnPosYOffset * 2;
 		
-		var solveButton: Sprite = SceneHelper.createButton(
-			{x: btnOffset, y: btnPosY},
+		var solveButton: Button = Button.create(
 			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			() -> solveButtonCb(),
 			Settings.solveBtnText);
 		
-		solveButton.addEventListener(MouseEvent.CLICK, (e) -> solveButtonCb());
+		solveButton.x = btnOffset;
+		solveButton.y = btnPosY;
 		addChild(solveButton);
+		
+		buttonsToHide = [applyButton, randomButton, smartRndButton, solveButton];
 	}
 	
 	public function onStageResize(): Void {
@@ -123,65 +134,51 @@ class Panel extends Sprite {
 	private function validateInput(textField: TextField): Int {
 		
 		var number: Null<Int> = Std.parseInt(textField.text);
-		number = number != null && number >= Settings.minTilesCount && number <= Settings.maxTilesCount ? number : Settings.rows;
+		
+		if (number == null) {
+			number = Settings.rows;
+		}
+		else if (number < Settings.minTilesCount) {
+			number = Settings.minTilesCount;
+		}
+		else if (number > Settings.maxTilesCount) {
+			number = Settings.maxTilesCount;
+		}
+		
 		textField.text = '${number}';
 		
 		return number;
 	}
 	
-	private function editBtnClicked(e: Event): Void {
+	private function editBtnClicked(): Void {
 		
-		var text: TextField;
-		
-		if (Std.is(e.target, Sprite)) {
+		if (editMode) {
 			
-			var btn: Sprite = cast(e.target, Sprite);
-			text = cast(btn.getChildByName(textBtnName), TextField);
-		}
-		else if (Std.is(e.target, TextField)) {
-			text = cast(e.target, TextField);
-		}
-		else {
-			throw 'click on button with something not sprite or text';
-		}
-		
-		if (text.text == Settings.editBtnText) {
-			
-			text.text = Settings.editDoneBtnText;
-			hideButtons([cast(text.parent, Sprite)]);
-		}
-		else {
-			
-			text.text = Settings.editBtnText;
+			editButton.setLabel(Settings.editBtnText);
 			showButtons();
+			editMode = false;
+		}
+		else {
+			
+			editButton.setLabel(Settings.editDoneBtnText);
+			hideButtons();
+			editMode = true;
 		}
 		
 		editButtonCb();
 	}
 	
-	private function hideButtons(exept: Array<Sprite>): Void {
+	private function hideButtons(): Void {
 		
-		for (i in 0 ... numChildren) {
-			
-			var child: DisplayObject = getChildAt(i);
-			
-			if (Std.is(child, Sprite)) {
-				
-				var sprite: Sprite = cast(child, Sprite);
-				
-				if (exept.indexOf(sprite) < 0) {
-					sprite.visible = false;
-				}
-			}
+		for (button in buttonsToHide) {
+			button.visible = false;
 		}
 	}
 	
 	private function showButtons(): Void {
 		
-		for (i in 0 ... numChildren) {
-			
-			var child: DisplayObject = getChildAt(i);
-			child.visible = true;
+		for (button in buttonsToHide) {
+			button.visible = true;
 		}
 	}
 }

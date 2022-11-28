@@ -1,12 +1,13 @@
-package scene;
+package ui;
 
 import model.Point.IntPoint;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextField;
+import ui.Button;
 
-using scene.SceneHelper;
+using GraphicsHelper;
 
 class MessageBox extends Sprite {
 	
@@ -24,17 +25,14 @@ class MessageBox extends Sprite {
 		window.fillColor(Settings.msgBoxColor, {x: 0, y: 0, width: size.x, height: size.y}, size.x * 0.1);
 		addChild(window);
 		
-		var msgText: TextField = SceneHelper.createStaticText(Std.int(size.x * 0.3), Std.int(size.y * 0.3), message);
+		var msgText: TextField = GraphicsHelper.createStaticText(Std.int(size.x * 0.3), Std.int(size.y * 0.3), message);
 		addChild(msgText);
 		
 		var btnSize: IntPoint = {x: Std.int(msgText.width + 5), y: Std.int(msgText.height + 5)};
-		var btnPos: IntPoint = {x: Std.int(size.x * 0.5 - btnSize.x * 0.5), y: Std.int(size.y * 0.5 + btnSize.y)};
-		var okBtn: Sprite = SceneHelper.createButton(btnPos, btnSize, 'Close');
-		okBtn.addEventListener(MouseEvent.CLICK, onOkClicked);
+		var okBtn: Button = Button.create(btnSize, null, 'Close');
+		okBtn.onClick = () -> { okBtn.dispose(); parent.removeChild(this); };
+		okBtn.x = Std.int(size.x * 0.5 - btnSize.x * 0.5);
+		okBtn.y = Std.int(size.y * 0.5 + btnSize.y);
 		addChild(okBtn);
-	}
-	
-	private function onOkClicked(e: Event): Void {
-		parent.removeChild(this);
 	}
 }
