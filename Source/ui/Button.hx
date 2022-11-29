@@ -53,6 +53,10 @@ class Button extends Sprite {
 	
 	public function dispose(): Void {
 		
+		if (parent != null) {
+			parent.removeChild(this);
+		}
+		
 		removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
@@ -79,7 +83,6 @@ class Button extends Sprite {
 		label = GraphicsHelper.createStaticText(0, 0, newLabel);
 		var shadow: DropShadowFilter = new DropShadowFilter(2, 45, 0x000000, 1, 0, 0);
 		label.filters = [shadow];
-		// label.border = true;
 		
 		var format: TextFormat = label.getTextFormat();
 		format.align = TextFormatAlign.CENTER;
@@ -88,7 +91,7 @@ class Button extends Sprite {
 		addChild(label);
 		
 		label.width = this.width;
-		label.x = (this.height - label.height) * 0.5;
+		label.y = (this.height - label.height) * 0.5;
 	}
 	
 	private function onMouseOver(e: Event): Void {

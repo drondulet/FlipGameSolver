@@ -1,10 +1,7 @@
 package ui;
 
 import Settings;
-import openfl.display.DisplayObject;
 import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.events.MouseEvent;
 import openfl.text.TextField;
 import ui.Button;
 
@@ -18,7 +15,16 @@ class Panel extends Sprite {
 	static private final textBtnName: String = 'editBtn';
 	
 	public var rowsInput(get, null): Int;
+	public function get_rowsInput(): Int {
+		var text: TextField = cast(getChildByName(rowsName), TextField);
+		return validateInput(text);
+	}
+	
 	public var colsInput(get, null): Int;
+	public function get_colsInput(): Int {
+		var text: TextField = cast(getChildByName(colsName), TextField);
+		return validateInput(text);
+	}
 	
 	public var applyButtonCb: Void->Void;
 	public var editButtonCb: Void->Void;
@@ -117,18 +123,6 @@ class Panel extends Sprite {
 	
 	public function onStageResize(): Void {
 		this.fillColor(Settings.panelColor, {x: 0, y: 0, width: Settings.panelWidth, height: stage.stageHeight});
-	}
-	
-	public function get_rowsInput(): Int {
-		
-		var text: TextField = cast(getChildByName(rowsName), TextField);
-		return validateInput(text);
-	}
-	
-	public function get_colsInput(): Int {
-		
-		var text: TextField = cast(getChildByName(colsName), TextField);
-		return validateInput(text);
 	}
 	
 	private function validateInput(textField: TextField): Int {

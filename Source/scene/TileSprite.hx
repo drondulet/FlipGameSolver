@@ -5,7 +5,7 @@ import model.Point;
 
 using GraphicsHelper;
 
-class Tile extends Sprite {
+class TileSprite extends Sprite {
 	
 	public var size(default, null): Int;
 	public var index(default, null): IntPoint;
@@ -19,8 +19,6 @@ class Tile extends Sprite {
 		this.size = size;
 		this.index = index;
 		this.isTurned = isTurned;
-		
-		this.addBmp({x: this.size, y: this.size});
 		
 		setState(isTurned);
 	}

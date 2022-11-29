@@ -12,7 +12,7 @@ class Main extends Sprite {
 		
 		super();
 		
-		scene = new Scene();
+		scene = GameFactory.createScene();
 		addChild(scene);
 		scene.init();
 		

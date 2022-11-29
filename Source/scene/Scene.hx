@@ -2,28 +2,33 @@ package scene;
 
 import Settings;
 import game.Session;
+import mediator.PanelMediator;
 import model.Matrix;
 import model.Point;
 import openfl.display.DisplayObject;
 import openfl.display.Shape;
 import openfl.display.Sprite;
+import openfl.display.Tilemap;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import ui.MessageBox;
-import ui.Panel;
 
 using GraphicsHelper;
+
 
 class Scene extends Sprite {
 	
 	private var session: Null<Session>;
 	private var tileBoard: Null<Sprite>;
-	private var panel: Null<Panel>;
-	private var tiles: Matrix<Tile>;
+	private var panelMediator: PanelMediator;
+	private var tiles: Matrix<TileSprite>;
+	private var tilemap: Tilemap;
 	private var solutionTiles: Null<Matrix<Null<Shape>>>;
 	
-	public function new() {
+	public function new(panelMediator: PanelMediator) {
+		
 		super();
+		this.panelMediator = panelMediator;
 	}
 	
 	public function init(): Void {
@@ -35,8 +40,7 @@ class Scene extends Sprite {
 	public function onStageResize(): Void {
 		
 		fillBgColor();
-		// Assert.assert(panel != null);
-		panel.onStageResize();
+		panelMediator.stageResized();
 	}
 	
 	private function startNewSession(settins: SessionSettings): Void {
@@ -53,13 +57,11 @@ class Scene extends Sprite {
 	
 	private function initControlPanel(): Void {
 		
-		panel = new Panel();
-		panel.applyButtonCb = onApplyBtnClicked;
-		panel.editButtonCb = onEditBtnClicked;
-		panel.randomButtonCb = onRandomBtnClicked;
-		panel.smartRndButtonCb = onSmartRndBtnClicked;
-		panel.solveButtonCb = onSolveBtnClicked;
-		addChild(panel);
+		panelMediator.applyButtonCb = onApplyBtnClicked;
+		panelMediator.editButtonCb = onEditBtnClicked;
+		panelMediator.randomButtonCb = onRandomBtnClicked;
+		panelMediator.smartRndButtonCb = onSmartRndBtnClicked;
+		panelMediator.solveButtonCb = onSolveBtnClicked;
 	}
 	
 	private function initTileBoard(): Void {
@@ -87,9 +89,9 @@ class Scene extends Sprite {
 	
 	private function handleBoardClick(event: Event): Void {
 		
-		if (Std.is(event.target, Tile)) {
+		if (Std.is(event.target, TileSprite)) {
 			
-			var tile: Tile = cast(event.target, Tile);
+			var tile: TileSprite = cast(event.target, TileSprite);
 			var col: Int = tile.index.x;
 			var row: Int = tile.index.y;
 			
@@ -110,7 +112,7 @@ class Scene extends Sprite {
 	
 	private function addTiles(): Void {
 		
-		var tile: Tile;
+		var tile: TileSprite = null;
 		var tileSize: Int = Settings.tileSize;
 		var tilesGap: Float = Settings.tilesGap;
 		
@@ -119,7 +121,7 @@ class Scene extends Sprite {
 		for (col in 0 ... session.cols) {
 			for (row in 0 ... session.rows) {
 				
-				tile = new Tile(tileSize, {x: col, y: row}, session.isTileTurned(col, row));
+				tile = new TileSprite(tileSize, {x: col, y: row}, session.isTileTurned(col, row));
 				tile.x = col * tile.width + col * tilesGap + tilesGap;
 				tile.y = row * tile.height + row * tilesGap + tilesGap;
 				tiles.setCell(tile, col, row);
@@ -158,7 +160,7 @@ class Scene extends Sprite {
 		while (i < tileBoard.numChildren) {
 			
 			var child: DisplayObject = tileBoard.getChildAt(i);
-			Std.is(child, Tile) ? tileBoard.removeChild(child) : i++;
+			Std.is(child, TileSprite) ? tileBoard.removeChild(child) : i++;
 		}
 	}
 	
@@ -175,7 +177,7 @@ class Scene extends Sprite {
 			return;
 		}
 		
-		startNewSession({x: panel.colsInput, y: panel.rowsInput});
+		startNewSession({x: panelMediator.colsInput, y: panelMediator.rowsInput});
 	}
 	
 	private function onEditBtnClicked(): Void {
@@ -225,7 +227,7 @@ class Scene extends Sprite {
 		var dotSize: Int = Settings.solutionDotSize;
 		var offset: Float = Settings.tileSize * 0.5;
 		var dot: Shape;
-		var tile: Tile;
+		var tile: TileSprite;
 		
 		for (cell in solutionCells) {
 			
