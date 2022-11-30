@@ -4,9 +4,13 @@
 	<meta title="FlipGameSolver" package="com.sample.flipgamesolver" version="1.0.0" company="Company Name" />
 	<app main="Main" path="Export" file="FlipGameSolver" />
 	
+	<haxeflag name="-dce" value="full" />
+
 	<source path="Source" />
 	
 	<haxelib name="openfl" />
+	<haxelib name="quadtree" />
+	<haxelib name="actuate" />
 	
 	<assets path="Assets" rename="assets" />
 	

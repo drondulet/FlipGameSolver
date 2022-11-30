@@ -2,9 +2,8 @@ package ui;
 
 import model.Point.IntPoint;
 import openfl.display.Sprite;
-import openfl.events.Event;
-import openfl.events.MouseEvent;
 import openfl.text.TextField;
+import openfl.text.TextFormatAlign;
 import ui.Button;
 
 using GraphicsHelper;
@@ -25,10 +24,14 @@ class MessageBox extends Sprite {
 		window.fillColor(Settings.msgBoxColor, {x: 0, y: 0, width: size.x, height: size.y}, size.x * 0.1);
 		addChild(window);
 		
-		var msgText: TextField = GraphicsHelper.createStaticText(Std.int(size.x * 0.3), Std.int(size.y * 0.3), message);
+		var msgText: TextField = GraphicsHelper.createStaticText(0, Std.int(size.y * 0.3), message);
+		msgText.width = window.width;
+		var format = msgText.getTextFormat();
+		format.align = TextFormatAlign.CENTER;
+		msgText.setTextFormat(format);
 		addChild(msgText);
 		
-		var btnSize: IntPoint = {x: Std.int(msgText.width + 5), y: Std.int(msgText.height + 5)};
+		var btnSize: IntPoint = {x: Std.int(window.width * 0.25), y: Std.int(msgText.height + 5)};
 		var okBtn: Button = Button.create(btnSize, null, 'Close');
 		okBtn.onClick = () -> { okBtn.dispose(); parent.removeChild(this); };
 		okBtn.x = Std.int(size.x * 0.5 - btnSize.x * 0.5);

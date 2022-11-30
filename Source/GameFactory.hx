@@ -47,15 +47,15 @@ class GameFactory {
 		parent.addChild(tilemap);
 		
 		// drop this
-		var tileNormal: Tile = new Tile(tileNormalIdx, 600, 20);
-		tileNormal.originX = size * 0.5;
+		// var tileNormal: Tile = new Tile(tileNormalIdx, 600, 20);
+		// tileNormal.originX = size * 0.5;
 		
-		var tileFlipped: Tile = new Tile(tileFlippedIdx, 600, 60 + Settings.tilesGap);
-		tileFlipped.originX = size * 0.5;
+		// var tileFlipped: Tile = new Tile(tileFlippedIdx, 600, 60 + Settings.tilesGap);
+		// tileFlipped.originX = size * 0.5;
 		// tileFlipped.id = 0;
 		
-		tilemap.addTile(tileNormal);
-		tilemap.addTile(tileFlipped);
+		// tilemap.addTile(tileNormal);
+		// tilemap.addTile(tileFlipped);
 		// drop that
 		
 		return tilemap;

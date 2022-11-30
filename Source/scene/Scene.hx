@@ -115,6 +115,7 @@ class Scene extends Sprite {
 		var tile: TileSprite = null;
 		var tileSize: Int = Settings.tileSize;
 		var tilesGap: Float = Settings.tilesGap;
+		var tileSizeHalf: Float = tileSize * 0.5;
 		
 		tiles = new Matrix(session.cols, session.rows);
 		
@@ -122,8 +123,8 @@ class Scene extends Sprite {
 			for (row in 0 ... session.rows) {
 				
 				tile = new TileSprite(tileSize, {x: col, y: row}, session.isTileTurned(col, row));
-				tile.x = col * tile.width + col * tilesGap + tilesGap;
-				tile.y = row * tile.height + row * tilesGap + tilesGap;
+				tile.x = col * tileSize + tileSizeHalf + col * tilesGap + tilesGap;
+				tile.y = row * tileSize + tileSizeHalf + row * tilesGap + tilesGap;
 				tiles.setCell(tile, col, row);
 				tileBoard.addChild(tile);
 			}
@@ -225,7 +226,6 @@ class Scene extends Sprite {
 		solutionTiles = new Matrix(session.cols, session.rows);
 		
 		var dotSize: Int = Settings.solutionDotSize;
-		var offset: Float = Settings.tileSize * 0.5;
 		var dot: Shape;
 		var tile: TileSprite;
 		
@@ -235,7 +235,7 @@ class Scene extends Sprite {
 			
 			dot = new Shape();
 			dot.graphics.beginFill(Settings.solutionDotColor);
-			dot.graphics.drawCircle(tile.x + offset, tile.y + offset, dotSize);
+			dot.graphics.drawCircle(tile.x, tile.y, dotSize);
 			dot.graphics.endFill();
 			
 			tileBoard.addChild(dot);

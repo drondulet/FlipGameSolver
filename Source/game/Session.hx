@@ -82,9 +82,7 @@ class Session {
 			board.cells.fill(0);
 			
 			for (i in 0 ... turns) {
-				
-				var point: IntPoint = {x: Std.random(cols), y: Std.random(rows)};
-				tilePressed(point.x, point.y);
+				changedCells = changedCells.concat(board.turnCell(Std.random(cols), Std.random(rows), false));
 			}
 		}
 		else {

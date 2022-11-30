@@ -1,7 +1,5 @@
 package;
 
-import openfl.utils.Assets;
-import openfl.text.Font;
 import model.Rect;
 import openfl.display.Sprite;
 import openfl.text.TextField;
