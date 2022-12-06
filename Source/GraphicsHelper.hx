@@ -44,8 +44,7 @@ class GraphicsHelper {
 		input.x = x;
 		input.y = y;
 		input.text = text;
-		input.height = input.textHeight + 2;
-		input.width = text.length * 12;
+		input.height = input.textHeight;
 		input.selectable = false;
 		// input.border = true;
 		

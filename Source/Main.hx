@@ -1,7 +1,7 @@
 package;
 
-import openfl.events.Event;
 import openfl.display.Sprite;
+import openfl.events.Event;
 import scene.Scene;
 
 class Main extends Sprite {
@@ -12,7 +12,12 @@ class Main extends Sprite {
 		
 		super();
 		
-		scene = GameFactory.createScene();
+		GameFactory.createScene().onComplete(onSceneReady);
+	}
+	
+	private function onSceneReady(scene: Scene): Void {
+		
+		this.scene = scene;
 		addChild(scene);
 		scene.init();
 		

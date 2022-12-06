@@ -1,11 +1,8 @@
 package;
 
 import mediator.PanelMediator;
-import ui.Panel;
 import openfl.display.BitmapData;
-import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
-import openfl.display.Tile;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.events.Event;
@@ -13,62 +10,78 @@ import openfl.geom.Rectangle;
 import openfl.utils.Future;
 import openfl.utils.Promise;
 import scene.Scene;
-import scene.TileSprite;
+import scene.TileBoardView;
+import ui.Panel;
 
 using GameFactory;
+using GraphicsHelper;
 
 class GameFactory {
 	
-	static public function createScene(): Scene {
+	static public function createScene(): Future<Scene> {
+		
+		var promise: Promise<Scene> = new Promise();
 		
 		var panel: Panel = new Panel();
 		var panelMediator: PanelMediator = new PanelMediator(panel);
 		
-		var scene: Scene = new Scene(panelMediator);
-		
 		function onTilesAtlasReady(bitmap: BitmapData): Void {
-			scene.addTileMap(bitmap, Settings.tileSize);
+			
+			var tileboadView: TileBoardView = crateTileMap(bitmap);
+			
+			var scene: Scene = new Scene(panelMediator, tileboadView);
+			scene.addChild(panel);
+			
+			promise.complete(scene);
 		}
 		
 		prepareTilesSprite().onComplete(onTilesAtlasReady);
 		
-		scene.addChild(panel);
-		
-		return scene;
+		return promise.future;
 	}
 	
-	static public function addTileMap(parent: DisplayObjectContainer, bitmapData: BitmapData, size: Int): Tilemap {
+	static private function crateTileMap(atlas: BitmapData): TileBoardView {
 		
-		var tileset: Tileset = new Tileset(bitmapData);
-		var tileNormalIdx: Int = tileset.addRect(new Rectangle(0, 0, size, size));
-		var tileFlippedIdx: Int = tileset.addRect(new Rectangle(size, 0, size, size));
+		var tileSize: Int = Settings.tileSize;
 		
-		var tilemap: Tilemap = new Tilemap(parent.stage.stageWidth, parent.stage.stageHeight, tileset);
-		parent.addChild(tilemap);
+		var tileset: Tileset = new Tileset(atlas);
+		var tileNormalIdx: Int = tileset.addRect(new Rectangle(0, 0, tileSize, tileSize));
+		var tileFlippedIdx: Int = tileset.addRect(new Rectangle(tileSize, 0, tileSize, tileSize));
 		
-		// drop this
-		// var tileNormal: Tile = new Tile(tileNormalIdx, 600, 20);
-		// tileNormal.originX = size * 0.5;
+		var tileBoardMaxSize: Int = Math.ceil(Settings.maxTilesCount * (Settings.tileSize + Settings.tilesGap));
 		
-		// var tileFlipped: Tile = new Tile(tileFlippedIdx, 600, 60 + Settings.tilesGap);
-		// tileFlipped.originX = size * 0.5;
-		// tileFlipped.id = 0;
+		var tilemap: Tilemap = new Tilemap(tileBoardMaxSize, tileBoardMaxSize, tileset);
 		
-		// tilemap.addTile(tileNormal);
-		// tilemap.addTile(tileFlipped);
-		// drop that
+		var tileStateIndices = {
+				normal: tileNormalIdx,
+				flipped: tileFlippedIdx,
+				normalWithDot: -1,
+				flippedWithDot: -1
+			};
 		
-		return tilemap;
+		var tileboardPosition = {
+				x: Settings.panelWidth + Settings.tileBoardOffset,
+				y: Settings.tileBoardOffset
+			};
+		
+		var tileboadView: TileBoardView = TileBoardView.create(tilemap, tileStateIndices, tileboardPosition);
+		
+		return tileboadView;
 	}
 	
 	static private function prepareTilesSprite(): Future<BitmapData> {
 		
 		var tileContaner: Sprite = new Sprite();
 		
-		var tileNormal: TileSprite = new TileSprite(Settings.tileSize, {x: 0, y: 0}, true);
+		var tileSize: Int = Settings.tileSize;
+		var tileSizeHalf: Float = tileSize * 0.5;
+		
+		var tileNormal: Sprite = new Sprite();
+		tileNormal.fillColor(Settings.tileNotTurnedColor, { x: 0, y: 0, width: tileSize, height: tileSize }, tileSizeHalf);
 		tileContaner.addChild(tileNormal);
 		
-		var tileFlipped: TileSprite = new TileSprite(Settings.tileSize, {x: 0, y: 0}, false);
+		var tileFlipped: Sprite = new Sprite();
+		tileFlipped.fillColor(Settings.tileTurnedColor, { x: 0, y: 0, width: tileSize, height: tileSize }, tileSizeHalf);
 		tileContaner.addChild(tileFlipped);
 		
 		tileNormal.x = 0;
