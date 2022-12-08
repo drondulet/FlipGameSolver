@@ -18,7 +18,7 @@ class Scene extends Sprite {
 	private final panelMediator: PanelMediator;
 	private final tileBoard: TileBoardView;
 	private var session: Null<Session>;
-	private var tiles: Matrix<TileSprite>;
+	// private var tiles: Matrix<TileSprite>;
 	private var solutionTiles: Null<Matrix<Null<Shape>>>;
 	
 	public function new(panelMediator: PanelMediator, tileBoard: TileBoardView) {
@@ -26,6 +26,7 @@ class Scene extends Sprite {
 		super();
 		this.panelMediator = panelMediator;
 		this.tileBoard = tileBoard;
+		// tileBoard.onTileClicked(handleBoardClick);
 		addChild(tileBoard);
 	}
 	
@@ -70,27 +71,23 @@ class Scene extends Sprite {
 		this.fillColor(Settings.bgColor, {x: 0 , y: 0, width: stage.stageWidth, height: stage.stageHeight});
 	}
 	
-	private function handleBoardClick(event: Event): Void {
+	private function handleBoardClick(index: IntPoint): Void {
 		
-		if (Std.is(event.target, TileSprite)) {
+		var col: Int = index.x;
+		var row: Int = index.y;
+		
+		session.tilePressed(col, row);
+		
+		// if (solutionTiles != null) {
 			
-			var tile: TileSprite = cast(event.target, TileSprite);
-			var col: Int = tile.index.x;
-			var row: Int = tile.index.y;
+		// 	var solutionDot: Null<Shape> = solutionTiles.getCell(col, row);
 			
-			session.tilePressed(col, row);
-			
-			if (solutionTiles != null) {
+		// 	if (solutionDot != null) {
 				
-				var solutionDot: Null<Shape> = solutionTiles.getCell(col, row);
-				
-				if (solutionDot != null) {
-					
-					solutionTiles.setCell(null, col, row);
-					tileBoard.removeChild(solutionDot);
-				}
-			}
-		}
+		// 		solutionTiles.setCell(null, col, row);
+		// 		tileBoard.removeChild(solutionDot);
+		// 	}
+		// }
 	}
 	
 	private function addTiles(): Void {
@@ -117,9 +114,8 @@ class Scene extends Sprite {
 	}
 	
 	private function updateSellsStates(cells: Array<IntPoint>): Void {
-		
 		for (cell in cells) {
-			tiles.getCell(cell.x, cell.y).setState(session.isTileTurned(cell.x, cell.y));
+			tileBoard.setTileState(cell.x, cell.y, session.isTileTurned(cell.x, cell.y));
 		}
 	}
 	
@@ -172,26 +168,8 @@ class Scene extends Sprite {
 	
 	private function addSolutionDots(solutionCells: Array<IntPoint>): Void {
 		
-		clearSolutionDots();
-		
-		solutionTiles = new Matrix(session.cols, session.rows);
-		
-		var dotSize: Int = Settings.solutionDotSize;
-		var dot: Shape;
-		var tile: TileSprite;
-		
-		for (cell in solutionCells) {
-			
-			tile = tiles.getCell(cell.x, cell.y);
-			
-			dot = new Shape();
-			dot.graphics.beginFill(Settings.solutionDotColor);
-			dot.graphics.drawCircle(tile.x, tile.y, dotSize);
-			dot.graphics.endFill();
-			
-			tileBoard.addChild(dot);
-			solutionTiles.setCell(dot, cell.x, cell.y);
-		}
+		tileBoard.clearSolutionDots();
+		tileBoard.addSolutionDots(solutionCells);
 	}
 	
 	private function clearSolutionDots(): Void {
