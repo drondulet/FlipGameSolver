@@ -2,6 +2,7 @@ package;
 
 import mediator.PanelMediator;
 import openfl.display.BitmapData;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
@@ -35,7 +36,7 @@ class GameFactory {
 			promise.complete(scene);
 		}
 		
-		prepareTilesSprite().onComplete(onTilesAtlasReady);
+		prepareTilesAtlas().onComplete(onTilesAtlasReady);
 		
 		return promise.future;
 	}
@@ -47,16 +48,16 @@ class GameFactory {
 		var tileset: Tileset = new Tileset(atlas);
 		var tileNormalIdx: Int = tileset.addRect(new Rectangle(0, 0, tileSize, tileSize));
 		var tileFlippedIdx: Int = tileset.addRect(new Rectangle(tileSize, 0, tileSize, tileSize));
+		var dotIdx: Int = tileset.addRect(new Rectangle(tileSize * 2, 0, tileSize, tileSize));
 		
 		var tileBoardMaxSize: Int = Math.ceil(Settings.maxTilesCount * (Settings.tileSize + Settings.tilesGap));
 		
 		var tilemap: Tilemap = new Tilemap(tileBoardMaxSize, tileBoardMaxSize, tileset);
 		
-		var tileStateIndices = {
+		var tileIndices = {
 				normal: tileNormalIdx,
 				flipped: tileFlippedIdx,
-				normalWithDot: -1,
-				flippedWithDot: -1
+				dot: dotIdx,
 			};
 		
 		var tileboardPosition = {
@@ -64,14 +65,18 @@ class GameFactory {
 				y: Settings.tileBoardOffset
 			};
 		
-		var tileboadView: TileBoardView = TileBoardView.create(tilemap, tileStateIndices, tileboardPosition);
+		var tileboadView: TileBoardView = TileBoardView.create(tilemap, tileIndices, tileboardPosition);
 		
 		return tileboadView;
 	}
 	
-	static private function prepareTilesSprite(): Future<BitmapData> {
+	static private function prepareTilesAtlas(): Future<BitmapData> {
 		
 		var tileContaner: Sprite = new Sprite();
+		
+#if debug
+		Main.oflStage.addChild(tileContaner);
+#end
 		
 		var tileSize: Int = Settings.tileSize;
 		var tileSizeHalf: Float = tileSize * 0.5;
@@ -84,11 +89,26 @@ class GameFactory {
 		tileFlipped.fillColor(Settings.tileTurnedColor, { x: 0, y: 0, width: tileSize, height: tileSize }, tileSizeHalf);
 		tileContaner.addChild(tileFlipped);
 		
+		var tileWithDot: Sprite = new Sprite();
+		tileWithDot.fillColor(0x000000, { x: 0, y: 0, width: tileSize, height: tileSize }, tileSizeHalf, 0);
+		tileContaner.addChild(tileWithDot);
+		
+		var dot: Shape = new Shape();
+		dot.graphics.beginFill(Settings.solutionDotColor);
+		dot.graphics.drawCircle(0, 0, Settings.solutionDotSize);
+		dot.graphics.endFill();
+		dot.x = tileSizeHalf;
+		dot.y = tileSizeHalf;
+		tileWithDot.addChild(dot);
+		
 		tileNormal.x = 0;
 		tileNormal.y = 0;
 		
 		tileFlipped.x = Settings.tileSize;
 		tileFlipped.y = 0;
+		
+		tileWithDot.x = Settings.tileSize * 2;
+		tileWithDot.y = 0;
 		
 		var promise: Promise<BitmapData> = new Promise();
 		

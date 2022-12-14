@@ -7,7 +7,6 @@ import model.Matrix;
 import model.Point;
 import openfl.display.Shape;
 import openfl.display.Sprite;
-import openfl.events.Event;
 import ui.MessageBox;
 
 using GraphicsHelper;
@@ -18,7 +17,6 @@ class Scene extends Sprite {
 	private final panelMediator: PanelMediator;
 	private final tileBoard: TileBoardView;
 	private var session: Null<Session>;
-	// private var tiles: Matrix<TileSprite>;
 	private var solutionTiles: Null<Matrix<Null<Shape>>>;
 	
 	public function new(panelMediator: PanelMediator, tileBoard: TileBoardView) {
@@ -26,7 +24,7 @@ class Scene extends Sprite {
 		super();
 		this.panelMediator = panelMediator;
 		this.tileBoard = tileBoard;
-		// tileBoard.onTileClicked(handleBoardClick);
+		tileBoard.tileClickedSignal.add(handleBoardClick);
 		addChild(tileBoard);
 	}
 	
@@ -49,9 +47,9 @@ class Scene extends Sprite {
 		session.onBoardChangeCb = onBoardChanged;
 		session.setPlayMode();
 		
-		removeAllTiles();
-		clearSolutionDots();
-		addTiles();
+		tileBoard.removeAllTiles();
+		tileBoard.clearSolutionDots();
+		tileBoard.addTiles(session.cols, session.rows, true);
 	}
 	
 	private function initControlPanel(): Void {
@@ -75,23 +73,8 @@ class Scene extends Sprite {
 		
 		var col: Int = index.x;
 		var row: Int = index.y;
-		
+		tileBoard.removeSolutionDots([index]);
 		session.tilePressed(col, row);
-		
-		// if (solutionTiles != null) {
-			
-		// 	var solutionDot: Null<Shape> = solutionTiles.getCell(col, row);
-			
-		// 	if (solutionDot != null) {
-				
-		// 		solutionTiles.setCell(null, col, row);
-		// 		tileBoard.removeChild(solutionDot);
-		// 	}
-		// }
-	}
-	
-	private function addTiles(): Void {
-		tileBoard.addTiles(session.cols, session.rows);
 	}
 	
 	private function onBoardChanged(cells: Array<IntPoint>): Void {
@@ -107,10 +90,6 @@ class Scene extends Sprite {
 		
 		showMsgBox('You win!');
 		session.setPlayMode();
-	}
-	
-	private function removeAllTiles(): Void {
-		tileBoard.removeAllTiles();
 	}
 	
 	private function updateSellsStates(cells: Array<IntPoint>): Void {
@@ -170,20 +149,6 @@ class Scene extends Sprite {
 		
 		tileBoard.clearSolutionDots();
 		tileBoard.addSolutionDots(solutionCells);
-	}
-	
-	private function clearSolutionDots(): Void {
-		
-		if (solutionTiles != null) {
-			
-			for (dot in solutionTiles) {
-				if (dot != null) {
-					tileBoard.removeChild(dot);
-				}
-			}
-			
-			solutionTiles.fill(null);
-		}
 	}
 	
 	private function showMsgBox(message: String): Void {

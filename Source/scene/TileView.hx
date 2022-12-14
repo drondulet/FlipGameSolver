@@ -4,7 +4,10 @@ import collision.RectangleMouseCollider;
 import model.Point.IntPoint;
 import motion.Actuate;
 import motion.actuators.GenericActuator;
+import motion.easing.Quad;
 import openfl.display.Tile;
+import scene.TileBoardView.TileIndex;
+import signals.Signal1;
 
 enum TileState {
 	normal;
@@ -13,13 +16,13 @@ enum TileState {
 
 class TileView extends Tile {
 	
-	static public function create(normalIdx: Int, flippedIdx: Int, size: IntPoint, ?flipped: Bool = false): TileView {
+	static public function create(stateIndices: TileIndex, size: IntPoint, cell: IntPoint, ?flipped: Bool = false): TileView {
 		
-		var inst: TileView = new TileView(size);
+		var inst: TileView = new TileView(size, cell);
 		
 		inst.indexByState = [
-			TileState.normal => normalIdx,
-			TileState.flipped => flippedIdx
+			TileState.normal => stateIndices.normal,
+			TileState.flipped => stateIndices.flipped,
 		];
 		
 		var state: TileState = flipped ? TileState.flipped : TileState.normal;
@@ -29,54 +32,57 @@ class TileView extends Tile {
 	}
 	
 	public final collider: RectangleMouseCollider;
+	public final cell: IntPoint;
+	public final clickSignal: Signal1<TileView>;
 	
 	private var state: TileState;
 	private var indexByState: Map<TileState, Int>;
 	private var sizeActuator: Null<GenericActuator<TileView>>;
 	private var flipActuator: Null<GenericActuator<TileView>>;
 	
-	private function new(size: IntPoint) {
+	private function new(size: IntPoint, cell: IntPoint) {
 		
 		super();
+		this.cell = cell;
 		state = TileState.normal;
+		clickSignal = new Signal1();
 		collider = new RectangleMouseCollider({x: 0, y: 0}, {x: size.x, y: size.y});
 		collider.receiver.onMouseOver = onMouseOver;
 		collider.receiver.onMouseClick = onClick;
 	}
 	
-	public function setState(newState: TileState): Void {
+	public function dispose(): Void {
+		clickSignal.remove(true);
+	}
+	
+	public function setFlipped(flipped: Bool): Void {
+		
+		var newState = flipped ? TileState.flipped : TileState.normal;
+		setState(newState);
+	}
+	
+	private function setState(newState: TileState): Void {
+		
+		if (state.equals(newState)) {
+			return;
+		}
 		
 		switch ([state, newState]) {
-			case [normal, flipped]: id = indexByState[flipped];
-			case [flipped, normal]: id = indexByState[normal];
 			
+			case [normal, flipped]:
+				startFlipAnimation(indexByState[flipped]);
+				
+			case [flipped, normal]:
+				startFlipAnimation(indexByState[normal]);
+				
 			default:
 		}
 		
 		state = newState;
 	}
 	
-	public function flip(): Void {
-		
-		var newState = 
-			switch (state) {
-				case normal: TileState.flipped;
-				case flipped: TileState.normal;
-			}
-		
-		setState(newState);
-	}
-	
 	private function onClick(): Void {
-		
-		// remove and add callback to main game
-		var newState = 
-			switch (state) {
-				case normal: TileState.flipped;
-				case flipped: TileState.normal;
-			}
-		
-		setState(newState);
+		clickSignal.dispatch(this);
 	}
 	
 	private function onMouseOver(): Void {
@@ -90,6 +96,22 @@ class TileView extends Tile {
 				.reverse()
 				.onComplete(() -> { scaleX = 1.0; scaleY = 1.0; sizeActuator = null; });
 		}
+	}
+	
+	private function startFlipAnimation(index: Int): Void {
+		
+		if (flipActuator != null) {
+			Actuate.stop(flipActuator);
+		}
+		
+		function changeState(): Void {
+			
+			id = index;
+			flipActuator = Actuate.tween(this, 0.1, {"scaleX": 1.0})
+				.onComplete(() -> { flipActuator = null; scaleX = 1.0; }).ease(Quad.easeOut);
+		}
+		
+		flipActuator = Actuate.tween(this, 0.1, {"scaleX": 0.1}).onComplete(changeState).ease(Quad.easeIn);
 	}
 	
 	override private function set_x(value: Float): Float {
@@ -110,9 +132,5 @@ class TileView extends Tile {
 	override private function set_originY(value: Float): Float {
 		collider.y = y - value;
 		return super.set_originY(value);
-	}
-	
-	private function setStateIndecies(): Void {
-		
 	}
 }

@@ -11,6 +11,7 @@
 	<haxelib name="openfl" />
 	<haxelib name="quadtree" />
 	<haxelib name="actuate" />
+	<haxelib name="signals" />
 	
 	<assets path="Assets" rename="assets" />
 	

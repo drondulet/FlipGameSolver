@@ -1,8 +1,8 @@
 package ui;
 
-import openfl.events.Event;
 import model.Point;
 import openfl.display.Sprite;
+import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.filters.ColorMatrixFilter;
 import openfl.filters.DropShadowFilter;
@@ -88,10 +88,10 @@ class Button extends Sprite {
 		format.align = TextFormatAlign.CENTER;
 		label.setTextFormat(format);
 		
-		addChild(label);
-		
 		label.width = this.width;
-		label.y = (this.height - label.height) * 0.5;
+		label.y = Math.floor((this.height - label.textHeight) * 0.5) - 1;
+		
+		addChild(label);
 	}
 	
 	private function onMouseOver(e: Event): Void {

@@ -1,52 +1,54 @@
 package scene;
 
-import openfl.geom.Rectangle;
-import collision.MouseCollisionController;
 import collision.BasePointCollider;
+import collision.MouseCollisionController;
 import model.Matrix;
 import model.Point.IntPoint;
 import openfl.display.Sprite;
+import openfl.display.Tile;
 import openfl.display.Tilemap;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
-import quadtree.QuadTree;
-import quadtree.types.Collider;
-import scene.TileView.TileState;
+import signals.Signal1;
 
 using GraphicsHelper;
 
-typedef TileStateIndex = {
+
+typedef TileIndex = {
 	var normal: Int;
 	var flipped: Int;
-	var normalWithDot: Int;
-	var flippedWithDot: Int;
+	var dot: Int;
 }
 
 class TileBoardView extends Sprite {
 	
-	static public function create(tilemap: Tilemap, stateIndices: TileStateIndex, position: IntPoint): TileBoardView {
+	static public function create(tilemap: Tilemap, tileIndices: TileIndex, position: IntPoint): TileBoardView {
 		
-		var inst: TileBoardView = new TileBoardView(tilemap, stateIndices);
+		var inst: TileBoardView = new TileBoardView(tilemap, tileIndices);
 		inst.initTileBoard(position);
 		return inst;
 	}
 	
+	public final tileClickedSignal: Signal1<IntPoint>;
+	
 	private final tilemap: Tilemap;
-	private final stateIndices: TileStateIndex;
+	private final tileIndices: TileIndex;
 	private final mouseCollider: BasePointCollider;
 	private var background: Sprite;
 	private var tiles: Matrix<TileView>;
+	private var dots: Matrix<Tile>;
 	
-	private function new(tilemap: Tilemap, stateIndices: TileStateIndex) {
+	private function new(tilemap: Tilemap, tileIndices: TileIndex) {
 		
 		super();
 		
 		this.tilemap = tilemap;
-		this.stateIndices = stateIndices;
+		this.tileIndices = tileIndices;
+		tileClickedSignal = new Signal1();
 		mouseCollider = new BasePointCollider();
 	}
 	
-	public function addTiles(cols: Int, rows: Int): Void {
+	public function addTiles(cols: Int, rows: Int, isFlipped: Bool): Void {
 		
 		var tileSize: Int = Settings.tileSize;
 		var tilesGap: Float = Settings.tilesGap;
@@ -57,17 +59,20 @@ class TileBoardView extends Sprite {
 		resizeTileBoard(xSize, ySize);
 		
 		tiles = new Matrix(cols, rows);
+		dots = new Matrix(cols, rows);
 		
 		var tile: TileView = null;
 		for (col in 0 ... cols) {
 			for (row in 0 ... rows) {
 				
-				tile = TileView.create(stateIndices.normal, stateIndices.flipped, {x: tileSize, y: tileSize});
+				tile = TileView.create(tileIndices, {x: tileSize, y: tileSize}, {x: col, y: row}, isFlipped);
 				tile.x = col * tileSize + tileSizeHalf + col * tilesGap + tilesGap;
 				tile.y = row * tileSize + tileSizeHalf + row * tilesGap + tilesGap;
 				
 				tile.originX = tileSizeHalf;
 				tile.originY = tileSizeHalf;
+				
+				tile.clickSignal.add(onTileClicked);
 				
 				tiles.setCell(tile, col, row);
 				tilemap.addTile(tile);
@@ -78,21 +83,55 @@ class TileBoardView extends Sprite {
 	}
 	
 	public function setTileState(col: Int, row: Int, flipped: Bool): Void {
-		
-		var newState: TileState = flipped ? TileState.flipped : TileState.normal;
-		tiles.getCell(col, row).setState(newState);
+		tiles.getCell(col, row).setFlipped(flipped);
 	}
 	
 	public function addSolutionDots(solutionCells: Array<IntPoint>): Void {
 		
+		var dotTile: Tile;
+		var tileView: TileView;
+		for (cell in solutionCells) {
+			
+			tileView = tiles.getCell(cell.x, cell.y);
+			dotTile = new Tile(tileIndices.dot, tileView.x, tileView.y);
+			dotTile.originX = tileView.originX;
+			dotTile.originY = tileView.originY;
+			tilemap.addTile(dotTile);
+			
+			dots.setCell(dotTile, cell.x, cell.y);
+		}
+	}
+	
+	public function removeSolutionDots(cells: Array<IntPoint>): Void {
+		for(cell in cells) {
+			tilemap.removeTile(dots.getCell(cell.x, cell.y));
+		}
 	}
 	
 	public function removeAllTiles(): Void {
+		
+		if (tiles != null) {
+			for (tile in tiles) {
+				tile.dispose();
+			}
+		}
+		tiles = null;
 		tilemap.removeTiles();
 	}
 	
 	public function clearSolutionDots(): Void {
 		
+		if (dots == null) {
+			return;
+		}
+		
+		for (dot in dots) {
+			tilemap.removeTile(dot);
+		}
+	}
+	
+	private function onTileClicked(tile: TileView): Void {
+		tileClickedSignal.dispatch(tile.cell);
 	}
 	
 	private function initTileBoard(position: IntPoint): Void {

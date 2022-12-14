@@ -12,12 +12,12 @@ using GraphicsHelper;
 class GraphicsHelper {
 	
 	static private final textFormat: TextFormat = new TextFormat("PT Astra Sans", 18, Settings.textColor);
-	static private final textFormatNums: TextFormat = new TextFormat("Lucida", 20, Settings.textColor, true);
+	static private final textFormatNums: TextFormat = new TextFormat("Roboto Bold", 18, Settings.textColor, true);
 	
-	static public function fillColor(object: Sprite, color: Int, rect: Rect, ?ellips: Float = 0): Void {
+	static public function fillColor(object: Sprite, color: Int, rect: Rect, ?ellips: Float = 0, ?alpha: Float = 1): Void {
 		
 		object.graphics.clear();
-		object.graphics.beginFill(color);
+		object.graphics.beginFill(color, alpha);
 		object.graphics.drawRoundRect(rect.x, rect.y, rect.width, rect.height, ellips);
 		object.graphics.endFill();
 	}
@@ -39,15 +39,15 @@ class GraphicsHelper {
 	
 	static public function createStaticText(x: Int, y: Int, text: String): TextField {
 		
-		var input: TextField = new TextField();
-		input.defaultTextFormat = textFormat;
-		input.x = x;
-		input.y = y;
-		input.text = text;
-		input.height = input.textHeight;
-		input.selectable = false;
-		// input.border = true;
+		var tf: TextField = new TextField();
+		tf.defaultTextFormat = textFormat;
+		tf.x = x;
+		tf.y = y;
+		tf.text = text;
+		tf.height = tf.textHeight;
+		tf.selectable = false;
+		// tf.border = true;
 		
-		return input;
+		return tf;
 	}
 }

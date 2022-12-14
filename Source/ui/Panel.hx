@@ -2,7 +2,10 @@ package ui;
 
 import Settings;
 import openfl.display.Sprite;
+import openfl.events.FocusEvent;
+import openfl.events.KeyboardEvent;
 import openfl.text.TextField;
+import openfl.ui.Keyboard;
 import ui.Button;
 
 using GraphicsHelper;
@@ -35,6 +38,8 @@ class Panel extends Sprite {
 	private var editButton: Button;
 	private var editMode: Bool;
 	private var buttonsToHide: Array<Button>;
+	private var onFocusRowsValue: String;
+	private var onFocusColsValue: String;
 	
 	public function new() {
 		
@@ -50,9 +55,15 @@ class Panel extends Sprite {
 		
 		var rows: TextField = GraphicsHelper.createInputText(indentInput, 50, rowsName);
 		rows.text = '${Settings.rows}';
+		rows.addEventListener(FocusEvent.FOCUS_IN, (_) -> { onFocusRowsValue = rows.text; rows.setSelection(0, rows.text.length); });
+		rows.addEventListener(FocusEvent.FOCUS_OUT, (_) -> if (onFocusRowsValue != rows.text) applyButtonCb());
+		rows.addEventListener(KeyboardEvent.KEY_UP, (event) -> if (event.keyCode == Keyboard.ENTER) stage.focus = null);
 		
 		var cols: TextField = GraphicsHelper.createInputText(indentInput, 80, colsName);
 		cols.text = '${Settings.cols}';
+		cols.addEventListener(FocusEvent.FOCUS_IN, (_) -> { onFocusColsValue = cols.text; cols.setSelection(0, cols.text.length); });
+		cols.addEventListener(FocusEvent.FOCUS_OUT, (_) -> if (onFocusColsValue != cols.text) applyButtonCb());
+		cols.addEventListener(KeyboardEvent.KEY_UP, (event) -> if (event.keyCode == Keyboard.ENTER) stage.focus = null);
 		
 		addChild(rows);
 		addChild(cols);
