@@ -1,16 +1,16 @@
 {
 	"version": "2.0.0",
-	"presentation": {
-		"echo": true,
-		"reveal": "always",
-		"focus": false,
-		"panel": "shared",
-		"showReuseMessage": true,
-		"clear": true
-	},
 	"tasks": [
 		{
-			"label": "HTML debug",
+			"label": "time",
+			"type": "shell",
+			"command": "Write-Host \"Finished at: $(Get-Date -DisplayHint Time)\"",
+			"presentation": {
+				"echo": false,
+			}
+		},
+		{
+			"label": "HTML5 debug",
 			"type": "shell",
 			"command": "openfl build html5 -debug",
 			"problemMatcher": [
@@ -19,9 +19,8 @@
 				"$haxe-error",
 				"$haxe-trace"
 			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
+			"presentation": {
+				"showReuseMessage": false,
 			}
 		},
 		{
@@ -34,9 +33,36 @@
 				"$haxe-error",
 				"$haxe-trace"
 			],
+			"presentation": {
+				"showReuseMessage": false,
+				"clear": true
+			}
+		},
+		{
+			"label": "HashLink Debug",
+			"dependsOrder": "sequence",
+			"dependsOn": ["HL debug", "time"],
 			"group": {
 				"kind": "build",
-				"isDefault": false
+				"isDefault": true
+			},
+			"presentation": {
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "HTML5 Debug",
+			"dependsOrder": "sequence",
+			"dependsOn": ["HTML5 debug", "time"],
+			"group": {
+				"kind": "build",
+				// "isDefault": true
+			},
+			"presentation": {
+				"panel": "shared",
+				"showReuseMessage": true,
 			}
 		}
 	]

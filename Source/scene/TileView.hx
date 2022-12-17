@@ -52,7 +52,18 @@ class TileView extends Tile {
 	}
 	
 	public function dispose(): Void {
+		
 		clickSignal.remove(true);
+		if (flipActuator != null) {
+			
+			Actuate.stop(flipActuator);
+			flipActuator = null;
+		}
+		if (sizeActuator != null) {
+			
+			Actuate.stop(sizeActuator);
+			sizeActuator = null;
+		}
 	}
 	
 	public function setFlipped(flipped: Bool): Void {

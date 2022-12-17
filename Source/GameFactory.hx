@@ -1,6 +1,7 @@
 package;
 
 import mediator.PanelMediator;
+import motion.Actuate;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 import openfl.display.Sprite;
@@ -74,9 +75,11 @@ class GameFactory {
 		
 		var tileContaner: Sprite = new Sprite();
 		
-#if debug
+		#if debug
 		Main.oflStage.addChild(tileContaner);
-#end
+		tileContaner.y = 500;
+		Actuate.tween(tileContaner, 1, {"x": 5}).repeat().reverse();
+		#end
 		
 		var tileSize: Int = Settings.tileSize;
 		var tileSizeHalf: Float = tileSize * 0.5;

@@ -28,6 +28,15 @@ class Scene extends Sprite {
 		addChild(tileBoard);
 	}
 	
+	public function dispose(): Void {
+		
+		panelMediator.dispose();
+		tileBoard.dispose();
+		if (parent != null) {
+			parent.removeChild(this);
+		}
+	}
+	
 	public function init(): Void {
 		
 		onStageResize();
@@ -36,8 +45,6 @@ class Scene extends Sprite {
 	}
 	
 	public function onStageResize(): Void {
-		
-		fillBgColor();
 		panelMediator.stageResized();
 	}
 	
@@ -59,14 +66,6 @@ class Scene extends Sprite {
 		panelMediator.randomButtonCb = onRandomBtnClicked;
 		panelMediator.smartRndButtonCb = onSmartRndBtnClicked;
 		panelMediator.solveButtonCb = onSolveBtnClicked;
-	}
-	
-	private function resizeTileBoard(x: Int, y: Int): Void {
-		tileBoard.fillColor(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
-	}
-	
-	private function fillBgColor(): Void {
-		this.fillColor(Settings.bgColor, {x: 0 , y: 0, width: stage.stageWidth, height: stage.stageHeight});
 	}
 	
 	private function handleBoardClick(index: IntPoint): Void {

@@ -35,6 +35,8 @@ class Panel extends Sprite {
 	public var smartRndButtonCb: Void->Void;
 	public var solveButtonCb: Void->Void;
 	
+	private final background: Sprite;
+	private var allButtons: Array<Button>;
 	private var editButton: Button;
 	private var editMode: Bool;
 	private var buttonsToHide: Array<Button>;
@@ -45,7 +47,23 @@ class Panel extends Sprite {
 		
 		super();
 		editMode = false;
+		background = new Sprite();
+		addChild(background);
 		init();
+	}
+	
+	public function dispose(): Void {
+		
+		if (allButtons != null) {
+			for (button in allButtons) {
+				button.dispose();
+			}
+		}
+		background.disposeBitmap();
+	}
+	
+	public function onStageResize(): Void {
+		background.fillBitmap(Settings.panelColor, {x: 0, y: 0, width: Settings.panelWidth, height: stage.stageHeight});
 	}
 	
 	private function init(): Void {
@@ -70,6 +88,11 @@ class Panel extends Sprite {
 		
 		addChild(GraphicsHelper.createStaticText(indentText, 50, rowsName));
 		addChild(GraphicsHelper.createStaticText(indentText, 80, colsName));
+		
+		createButtons();
+	}
+	
+	private function createButtons(): Void {
 		
 		var btnOffset: Int = 10;
 		var btnWidth: Int = 30;
@@ -130,10 +153,7 @@ class Panel extends Sprite {
 		addChild(solveButton);
 		
 		buttonsToHide = [applyButton, randomButton, smartRndButton, solveButton];
-	}
-	
-	public function onStageResize(): Void {
-		this.fillColor(Settings.panelColor, {x: 0, y: 0, width: Settings.panelWidth, height: stage.stageHeight});
+		allButtons = [applyButton, editButton, randomButton, smartRndButton, solveButton];
 	}
 	
 	private function validateInput(textField: TextField): Int {
@@ -174,14 +194,12 @@ class Panel extends Sprite {
 	}
 	
 	private function hideButtons(): Void {
-		
 		for (button in buttonsToHide) {
 			button.visible = false;
 		}
 	}
 	
 	private function showButtons(): Void {
-		
 		for (button in buttonsToHide) {
 			button.visible = true;
 		}

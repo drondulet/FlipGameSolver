@@ -54,4 +54,8 @@ class PanelMediator {
 	public function stageResized(): Void {
 		panel.onStageResize();
 	}
+	
+	public function dispose(): Void {
+		panel.dispose();
+	}
 }

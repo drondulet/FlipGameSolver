@@ -48,6 +48,18 @@ class TileBoardView extends Sprite {
 		mouseCollider = new BasePointCollider();
 	}
 	
+	public function dispose(): Void {
+		
+		if (parent != null) {
+			parent.removeChild(this);
+		}
+		
+		removeAllTiles();
+		clearSolutionDots();
+		background.disposeBitmap();
+		tilemap.tileset.bitmapData.dispose();
+	}
+	
 	public function addTiles(cols: Int, rows: Int, isFlipped: Bool): Void {
 		
 		var tileSize: Int = Settings.tileSize;
@@ -117,6 +129,8 @@ class TileBoardView extends Sprite {
 		}
 		tiles = null;
 		tilemap.removeTiles();
+		
+		MouseCollisionController.inst.clearAllRecevers();
 	}
 	
 	public function clearSolutionDots(): Void {
@@ -152,7 +166,7 @@ class TileBoardView extends Sprite {
 	
 	private function resizeTileBoard(x: Int, y: Int): Void {
 		
-		background.fillColor(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
+		background.fillBitmap(Settings.tileboardColor, {x: 0, y: 0, width: x, height: y}, Settings.tileSize * 0.5);
 		MouseCollisionController.inst.init(background.getRect(null));
 	}
 	

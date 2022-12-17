@@ -1,6 +1,9 @@
 package;
 
 import model.Rect;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
@@ -13,6 +16,26 @@ class GraphicsHelper {
 	
 	static private final textFormat: TextFormat = new TextFormat("PT Astra Sans", 18, Settings.textColor);
 	static private final textFormatNums: TextFormat = new TextFormat("Roboto Bold", 18, Settings.textColor, true);
+	
+	static public function fillBitmap(object: DisplayObjectContainer, color: Int, rect: Rect, ?ellips: Float = 0, ?alpha: Float = 1): Void {
+		
+		disposeBitmap(object);
+		
+		var container: Sprite = new Sprite();
+		container.fillColor(color, {x: rect.x, y: rect.y, width: rect.width, height: rect.height}, ellips, alpha);
+		var bmp: BitmapData = new BitmapData(Std.int(rect.width), Std.int(rect.height), true, 0x000000FF);
+		bmp.draw(container);
+		
+		object.addChild(new Bitmap(bmp));
+	}
+	
+	static public function disposeBitmap(object: DisplayObjectContainer): Void {
+		
+		for (i in 0 ... object.numChildren) {
+			cast(object.getChildAt(i), Bitmap).bitmapData.dispose();
+		}
+		object.removeChildren();
+	}
 	
 	static public function fillColor(object: Sprite, color: Int, rect: Rect, ?ellips: Float = 0, ?alpha: Float = 1): Void {
 		
@@ -44,6 +67,7 @@ class GraphicsHelper {
 		tf.x = x;
 		tf.y = y;
 		tf.text = text;
+		tf.width = tf.textWidth;
 		tf.height = tf.textHeight;
 		tf.selectable = false;
 		// tf.border = true;

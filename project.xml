@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="FlipGameSolver" package="com.sample.flipgamesolver" version="1.0.0" company="Company Name" />
+	<meta title="FlipGameSolver" package="com.sample.flipgamesolver" version="1.0.0" company="dd" />
 	<app main="Main" path="Export" file="FlipGameSolver" />
+	
+	<window background="#000000" fullscreen="false" resizable="true" borderless="false" vsync="false" />
 	
 	<haxeflag name="-dce" value="full" />
 
@@ -12,6 +14,7 @@
 	<haxelib name="quadtree" />
 	<haxelib name="actuate" />
 	<haxelib name="signals" />
+	<haxelib name="hxcpp-debug-server" if="cpp debug"/>
 	
 	<assets path="Assets" rename="assets" />
 	

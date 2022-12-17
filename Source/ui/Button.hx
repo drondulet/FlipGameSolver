@@ -26,8 +26,8 @@ class Button extends Sprite {
 	static public function create(size: IntPoint, onPressed: Void->Void, ?label: String = ""): Button {
 		
 		var inst: Button = new Button(onPressed);
-		inst.fillColor(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
-		inst.setLabel(label); // after fillColor(), wrong "this.width" otherwise
+		inst.background.fillBitmap(Settings.buttonColor, {x: 0, y: 0, width: size.x, height: size.y}, 10);
+		inst.setLabel(label); // after fillBitmap(), wrong "this.width" otherwise
 		
 		return inst;
 	}
@@ -35,6 +35,7 @@ class Button extends Sprite {
 	public var label(default, null): Null<TextField>;
 	public var onClick: Void->Void;
 	
+	private final background: Sprite;
 	private var pressed: Bool;
 	
 	private function new(clickCb: Void->Void): Void {
@@ -44,6 +45,9 @@ class Button extends Sprite {
 		useHandCursor = true;
 		pressed = false;
 		onClick = clickCb;
+		
+		background = new Sprite();
+		addChild(background);
 		
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
@@ -56,6 +60,8 @@ class Button extends Sprite {
 		if (parent != null) {
 			parent.removeChild(this);
 		}
+		
+		background.disposeBitmap();
 		
 		removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
