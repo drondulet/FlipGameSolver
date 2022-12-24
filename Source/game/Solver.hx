@@ -43,7 +43,7 @@ class Solver {
 			return null;
 		}
 		
-		var solutionMat: Matrix<Int> = new Matrix(cols, rows);
+		var solutionMat: Matrix<Int> = new Matrix(cols, rows, 0);
 		var i: Int = 0;
 		
 		for (row in 0 ... rows) {
@@ -116,7 +116,7 @@ class Solver {
 		var rows: Int = patternMat.rows;
 		var value: Int;
 		
-		calcMat = new Matrix(fullCols, rows);
+		calcMat = new Matrix(fullCols, rows, 0);
 		
 		for (row in 0 ... rows) {
 			for (col in 0 ... fullCols) {
@@ -183,7 +183,7 @@ class Solver {
 		}
 	}
 	
-	private function swapStep(col: Int, row: Int) {
+	inline private function swapStep(col: Int, row: Int): Void {
 		
 		var rows: Int = calcMat.rows;
 		
@@ -191,8 +191,8 @@ class Solver {
 			
 			if (calcMat.getCell(col, r) != 0) {
 				
-				swapRows(row, r);
-				return;
+				calcMat.swapRows(row, r);
+				break;
 			}
 		}
 	}
@@ -200,7 +200,7 @@ class Solver {
 	/**
 		adds row1 to row2, row2 will be replaced!
 	**/
-	private function addRows(row1: Int, row2: Int): Void {
+	inline private function addRows(row1: Int, row2: Int): Void {
 		
 		var size: Int = calcMat.cols;
 		
@@ -210,12 +210,5 @@ class Solver {
 			var value2: Int = calcMat.getCell(i, row2);
 			calcMat.setCell(value1 ^ value2, i, row2);
 		}
-	}
-	
-	private function swapRows(row1: Int, row2: Int): Void {
-		
-		var temp: Vector<Int> = calcMat.mat[row1];
-		calcMat.mat[row1] = calcMat.mat[row2];
-		calcMat.mat[row2] = temp;
 	}
 }

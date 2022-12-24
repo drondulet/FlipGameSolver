@@ -3,35 +3,32 @@ package model;
 import haxe.ds.Vector;
 // import utils.Assert;
 
+@:generic
 class Matrix<T> {
 	
 	public var cols(default, null): Int;
 	public var rows(default, null): Int;
 	
-	@:allow(game.Solver)
-	private var mat: Vector<Vector<T>>;
+	private final mat: Vector<T>;
+	private final mIterator: MatrixIterator<T>;
 	
-	public function new(cols: Int, rows: Int, defaultValue: Null<T> = null) {
+	public function new(cols: Int, rows: Int, defaultValue: T) {
 		
 		this.cols = cols;
 		this.rows = rows;
-		mat = new Vector(rows);
-		
-		for (row in 0 ... rows) {
-			mat[row] = new Vector(cols);
-		}
-		
+		mat = new Vector(rows * cols);
+		mIterator = new MatrixIterator(this);
 		fill(defaultValue);
 	}
 	
 	inline public function getCell(col: Int, row: Int): T {
 		// Assert.assert(isInside(row, col));
-		return mat[row][col];
+		return mat[cols * row + col];
 	}
 	
 	inline public function setCell(value: T, col: Int, row: Int): Void {
 		// Assert.assert(isInside(row, col));
-		mat[row][col] = value;
+		mat[cols * row + col] = value;
 	}
 	
 	public function fill(value: T): Void {
@@ -43,8 +40,22 @@ class Matrix<T> {
 		}
 	}
 	
+	inline public function swapRows(row1: Int, row2: Int): Void {
+		
+		var temp: Vector<T> = new Vector(cols);
+		for (col in 0 ... cols) {
+			temp[col] = getCell(col, row1);
+		}
+		for (col in 0 ... cols) {
+			setCell(getCell(col, row2), col, row1);
+		}
+		for (col in 0 ... cols) {
+			setCell(temp[col], col, row2);
+		}
+	}
+	
 	public function iterator(): Iterator<T> {
-		return new MatrixIterator(this);
+		return mIterator.reset();
 	}
 	
 	inline public function isInside(col: Int, row: Int): Bool {
@@ -64,53 +75,37 @@ class Matrix<T> {
 		
 		return result;
 	}
-	
-	public function getHash(): String {
-		
-		var result: String = "";
-		
-		for (col in 0 ... cols) {
-			for (row in 0 ... rows) {
-				result += '${getCell(col, row)}';
-			}
-		}
-		
-		return result;
-	}
 }
 
+@:generic
 class MatrixIterator<T> {
 	
 	final mat: Matrix<T>;
-	private var col: Int;
-	private var row: Int;
+	private var i: Int;
 	
 	public function new(mat: Matrix<T>): Void {
 		
 		this.mat = mat;
-		col = -1;
-		row = 0;
+		i = 0;
 	}
 	
-	public function hasNext(): Bool {
+	public function reset(): MatrixIterator<T> {
+		
+		i = 0;
+		return this;
+	}
+	
+	inline public function hasNext(): Bool {
 		
 		inc();
-		return mat.isInside(col, row);
+		@:privateAccess return i < mat.mat.length;
 	}
 	
-	public function next(): T {
-		return mat.getCell(col, row);
+	inline public function next(): T {
+		@:privateAccess return mat.mat[i];
 	}
 	
-	private function inc(): Void {
-		
-		if(col < mat.cols - 1) {
-			col++;
-		}
-		else {
-			
-			col = 0;
-			row++;
-		}
+	inline private function inc(): Void {
+		i++;
 	}
 }

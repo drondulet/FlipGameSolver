@@ -95,12 +95,14 @@ class Panel extends Sprite {
 	private function createButtons(): Void {
 		
 		var btnOffset: Int = 10;
-		var btnWidth: Int = 30;
 		var btnPosY: Int = 120;
 		var btnPosYOffset: Int = 40;
+		var panelWidth: Int = Settings.panelWidth;
+		var btnWidth: Int = panelWidth - btnOffset * 2;
+		var btnHeight: Int = 30;
 		
 		var applyButton: Button = Button.create(
-			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			{x: btnWidth, y: btnHeight},
 			() -> applyButtonCb(),
 			Settings.resetBtnText);
 		
@@ -111,7 +113,7 @@ class Panel extends Sprite {
 		btnPosY += btnPosYOffset;
 		
 		editButton = Button.create(
-			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			{x: btnWidth, y: btnHeight},
 			editBtnClicked,
 			Settings.editBtnText);
 		
@@ -122,7 +124,7 @@ class Panel extends Sprite {
 		btnPosY += btnPosYOffset;
 		
 		var randomButton: Button = Button.create(
-			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			{x: btnWidth, y: btnHeight},
 			() -> randomButtonCb(),
 			Settings.randomBtnText);
 		
@@ -133,7 +135,7 @@ class Panel extends Sprite {
 		btnPosY += btnPosYOffset;
 		
 		var smartRndButton: Button = Button.create(
-			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			{x: btnWidth, y: btnHeight},
 			() -> smartRndButtonCb(),
 			Settings.smartRndBtnText);
 		
@@ -144,7 +146,7 @@ class Panel extends Sprite {
 		btnPosY += btnPosYOffset * 2;
 		
 		var solveButton: Button = Button.create(
-			{x: Settings.panelWidth - btnOffset * 2, y: btnWidth},
+			{x: btnWidth, y: btnHeight},
 			() -> solveButtonCb(),
 			Settings.solveBtnText);
 		

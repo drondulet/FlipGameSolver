@@ -70,8 +70,8 @@ class TileBoardView extends Sprite {
 		var ySize: Int = Std.int(rows * (tileSize + tilesGap) + tilesGap);
 		resizeTileBoard(xSize, ySize);
 		
-		tiles = new Matrix(cols, rows);
-		dots = new Matrix(cols, rows);
+		tiles = new Matrix(cols, rows, null);
+		dots = new Matrix(cols, rows, null);
 		
 		var tile: TileView = null;
 		for (col in 0 ... cols) {

@@ -45,13 +45,14 @@ class GameFactory {
 	static private function crateTileMap(atlas: BitmapData): TileBoardView {
 		
 		var tileSize: Int = Settings.tileSize;
+		var tilesGap: Float = Settings.tilesGap;
 		
 		var tileset: Tileset = new Tileset(atlas);
 		var tileNormalIdx: Int = tileset.addRect(new Rectangle(0, 0, tileSize, tileSize));
 		var tileFlippedIdx: Int = tileset.addRect(new Rectangle(tileSize, 0, tileSize, tileSize));
 		var dotIdx: Int = tileset.addRect(new Rectangle(tileSize * 2, 0, tileSize, tileSize));
 		
-		var tileBoardMaxSize: Int = Math.ceil(Settings.maxTilesCount * (Settings.tileSize + Settings.tilesGap));
+		var tileBoardMaxSize: Int = Math.ceil(Settings.maxTilesCount * (tileSize + tilesGap));
 		
 		var tilemap: Tilemap = new Tilemap(tileBoardMaxSize, tileBoardMaxSize, tileset);
 		
@@ -107,10 +108,10 @@ class GameFactory {
 		tileNormal.x = 0;
 		tileNormal.y = 0;
 		
-		tileFlipped.x = Settings.tileSize;
+		tileFlipped.x = tileSize;
 		tileFlipped.y = 0;
 		
-		tileWithDot.x = Settings.tileSize * 2;
+		tileWithDot.x = tileSize * 2;
 		tileWithDot.y = 0;
 		
 		var promise: Promise<BitmapData> = new Promise();
