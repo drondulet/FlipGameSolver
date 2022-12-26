@@ -4,9 +4,12 @@
 	<meta title="FlipGameSolver" package="com.sample.flipgamesolver" version="1.0.0" company="dd" />
 	<app main="Main" path="Export" file="FlipGameSolver" />
 	
-	<window background="#000000" fullscreen="false" resizable="true" borderless="false" vsync="false" />
+	<window background="#505050" fullscreen="false" resizable="true" borderless="false" vsync="false" />
+	
+	<!-- <define name="noinline" /> -->
 	
 	<haxeflag name="-dce" value="full" />
+	<haxeflag name="--no-inline" if="noinline"/>
 
 	<source path="Source" />
 	
@@ -17,5 +20,7 @@
 	<haxelib name="hxcpp-debug-server" if="cpp debug"/>
 	
 	<assets path="Assets" rename="assets" />
+	<icon path="ico.png" />
 	
+	<!-- <window hidden="true" /> -->
 </project>

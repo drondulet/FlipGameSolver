@@ -14,8 +14,13 @@ using GraphicsHelper;
 
 class GraphicsHelper {
 	
+	#if mobile
+	static private final textFormat: TextFormat = new TextFormat("PT Astra Sans", 36, Settings.textColor);
+	static private final textFormatNums: TextFormat = new TextFormat("Roboto Bold", 36, Settings.textColor, true);
+	#else
 	static private final textFormat: TextFormat = new TextFormat("PT Astra Sans", 18, Settings.textColor);
 	static private final textFormatNums: TextFormat = new TextFormat("Roboto Bold", 18, Settings.textColor, true);
+	#end
 	
 	static public function fillBitmap(object: DisplayObjectContainer, color: Int, rect: Rect, ?ellips: Float = 0, ?alpha: Float = 1): Void {
 		
@@ -54,7 +59,7 @@ class GraphicsHelper {
 		input.y = y;
 		input.name = name;
 		input.height = input.textHeight + 2;
-		input.width = 50;
+		input.width = input.height * 1.5;
 		input.border = true;
 		
 		return input;

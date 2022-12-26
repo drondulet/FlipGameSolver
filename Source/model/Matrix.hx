@@ -96,16 +96,10 @@ class MatrixIterator<T> {
 	}
 	
 	inline public function hasNext(): Bool {
-		
-		inc();
 		@:privateAccess return i < mat.mat.length;
 	}
 	
 	inline public function next(): T {
-		@:privateAccess return mat.mat[i];
-	}
-	
-	inline private function inc(): Void {
-		i++;
+		@:privateAccess return mat.mat[i++];
 	}
 }

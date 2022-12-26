@@ -15,7 +15,14 @@ class Panel extends Sprite {
 	
 	static private final colsName: String = 'Columns';
 	static private final rowsName: String = 'Rows';
-	static private final textBtnName: String = 'editBtn';
+	
+	#if mobile
+	static private final btnHeight: Int = 60;
+	static private final btnPosYOffset: Int = 80;
+	#else
+	static private final btnHeight: Int = 30;
+	static private final btnPosYOffset: Int = 40;
+	#end
 	
 	public var rowsInput(get, null): Int;
 	public function get_rowsInput(): Int {
@@ -68,16 +75,17 @@ class Panel extends Sprite {
 	
 	private function init(): Void {
 		
-		final indentText: Int = 10;
-		final indentInput: Int = 100;
+		final indentText: Int = Std.int(Settings.panelWidth * 0.15);
+		final indentInput: Int = Std.int(Settings.panelWidth * 0.75);
+		final rowsY: Int = 50;
 		
-		var rows: TextField = GraphicsHelper.createInputText(indentInput, 50, rowsName);
+		var rows: TextField = GraphicsHelper.createInputText(indentInput, rowsY, rowsName);
 		rows.text = '${Settings.rows}';
 		rows.addEventListener(FocusEvent.FOCUS_IN, (_) -> { onFocusRowsValue = rows.text; rows.setSelection(0, rows.text.length); });
 		rows.addEventListener(FocusEvent.FOCUS_OUT, (_) -> if (onFocusRowsValue != rows.text) applyButtonCb());
 		rows.addEventListener(KeyboardEvent.KEY_UP, (event) -> if (event.keyCode == Keyboard.ENTER) stage.focus = null);
 		
-		var cols: TextField = GraphicsHelper.createInputText(indentInput, 80, colsName);
+		var cols: TextField = GraphicsHelper.createInputText(indentInput, Std.int(rowsY + rows.height), colsName);
 		cols.text = '${Settings.cols}';
 		cols.addEventListener(FocusEvent.FOCUS_IN, (_) -> { onFocusColsValue = cols.text; cols.setSelection(0, cols.text.length); });
 		cols.addEventListener(FocusEvent.FOCUS_OUT, (_) -> if (onFocusColsValue != cols.text) applyButtonCb());
@@ -86,20 +94,17 @@ class Panel extends Sprite {
 		addChild(rows);
 		addChild(cols);
 		
-		addChild(GraphicsHelper.createStaticText(indentText, 50, rowsName));
-		addChild(GraphicsHelper.createStaticText(indentText, 80, colsName));
+		addChild(GraphicsHelper.createStaticText(indentText, rowsY, rowsName));
+		addChild(GraphicsHelper.createStaticText(indentText, Std.int(rowsY + rows.height), colsName));
 		
-		createButtons();
+		createButtons(Std.int(rowsY + rows.height) * 2);
 	}
 	
-	private function createButtons(): Void {
+	private function createButtons(btnPosY: Int): Void {
 		
-		var btnOffset: Int = 10;
-		var btnPosY: Int = 120;
-		var btnPosYOffset: Int = 40;
+		var btnOffset: Int = btnPosYOffset - btnHeight;
 		var panelWidth: Int = Settings.panelWidth;
 		var btnWidth: Int = panelWidth - btnOffset * 2;
-		var btnHeight: Int = 30;
 		
 		var applyButton: Button = Button.create(
 			{x: btnWidth, y: btnHeight},

@@ -152,7 +152,11 @@ class Scene extends Sprite {
 	
 	private function showMsgBox(message: String): Void {
 		
+		#if mobile
+		var size: IntPoint = {x: 600, y: 400};
+		#else
 		var size: IntPoint = {x: 300, y: 200};
+		#end
 		var pos: IntPoint = {x: Std.int(stage.stageWidth * 0.5 - size.x * 0.5), y: Std.int(stage.stageHeight * 0.5 - size.y * 0.5)};
 		var mgsBox: Sprite = new MessageBox(message, size, pos);
 		addChild(mgsBox);
